@@ -1277,7 +1277,7 @@ function st(id){const v=store.st[id];return v&&v.s?v.s:'new'}
 function setSt(id,v){store.st[id]={s:v,t:Date.now()};save();renderHome();pushSoon()}
 
 /* ---------- 跨裝置同步（Google 試算表後端） ---------- */
-const ENDPOINT='';
+const ENDPOINT='https://script.google.com/macros/s/AKfycbzGmxyDtn7gOSrNeAD_bmZTsVvZxz-XIjtS5jsFCuAi6YXGrNOiKWHs4hHUmbV_-CAg/exec';
 let syncCode='';try{syncCode=localStorage.getItem(KEY+'-code')||''}catch(e){}
 function merge(a,b){const o={...a};Object.keys(b||{}).forEach(k=>{if(!o[k]||(b[k]&&b[k].t>o[k].t))o[k]=b[k]});return o}
 function syncMsg(t,bad){const el=$('#syncState');if(el){el.textContent=t;el.className='small '+(bad?'status-again':'muted')}}
