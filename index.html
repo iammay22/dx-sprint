@@ -1287,9 +1287,12 @@ function qText(p){return label(p)+'\n'+toPlain(p.q)}
 function solText(p){return qText(p)+'\n\n解法：\n'+p.steps.map((x,i)=>(i+1)+'. '+toPlain(x)).join('\n')+'\n\n答案：'+toPlain(p.a)}
 let toastT=null;
 function toast(t){let el=$('#toast');if(!el){el=document.createElement('div');el.id='toast';el.setAttribute('role','status');document.body.appendChild(el)}el.textContent=t;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),1600)}
-async function copyText(t){
-  try{await navigator.clipboard.writeText(t);toast('已複製');return}catch(e){}
-  try{const ta=document.createElement('textarea');ta.value=t;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();toast(ok?'已複製':'這個瀏覽器不讓我複製，請長按題目文字');}catch(e){toast('這個瀏覽器不讓我複製，請長按題目文字')}
+function copyText(t){
+  let ok=false;
+  try{const ta=document.createElement('textarea');ta.value=t;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.top='0';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();ta.setSelectionRange(0,t.length);ok=document.execCommand('copy');ta.remove()}catch(e){}
+  if(ok){toast('已複製');return}
+  const fail=()=>toast('這個瀏覽器不讓我複製，請長按題目文字');
+  try{Promise.race([navigator.clipboard.writeText(t),new Promise((_,r)=>setTimeout(r,1500))]).then(()=>toast('已複製'),fail)}catch(e){fail()}
 }
 
 /* ---------- 跨裝置同步（Google 試算表後端） ---------- */
