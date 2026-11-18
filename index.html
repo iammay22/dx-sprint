@@ -130,7 +130,13 @@ table.gl td:first-child{font-family:Georgia,serif;font-style:italic;width:55%}
 .sheet-grid{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
 .sheet-sec{scroll-margin-top:80px;min-width:0}
 .sh-f>div{max-width:100%;overflow-x:auto;overflow-y:hidden}
-.sh-title{font-family:var(--display);font-size:18px;margin:0 0 8px;padding-bottom:6px;border-bottom:2px solid var(--ink)}
+.sh-title{font-family:var(--display);font-size:18px;font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sh-title::-webkit-details-marker{display:none}
+.sh-title::after{content:'展開';font-family:var(--body);font-size:13px;font-weight:400;color:var(--accent);margin-left:auto}
+details[open]>.sh-title::after{content:'收起'}
+details[open]>.sh-title{margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid var(--ink)}
+.sh-count{font-family:var(--body);font-size:12px;font-weight:400;color:var(--muted)}
+.quick-top{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
 .sh-rows{display:flex;flex-direction:column}
 .sh-row{display:flex;flex-direction:column;gap:2px;padding:7px 0;border-bottom:1px solid var(--rule)}
 .sh-row:last-child{border-bottom:0}
@@ -151,6 +157,7 @@ table.gl td:first-child{font-family:Georgia,serif;font-style:italic;width:55%}
   .qtext{font-size:19px}
   #unitList{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
   .sheet-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .quick-top{grid-template-columns:repeat(2,minmax(0,1fr))}
   #v-drill,#v-exam{max-width:860px;width:100%;margin:0 auto}
   #toast{bottom:32px}
 }
@@ -263,12 +270,7 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg
 
 <!-- 速練 -->
 <section class="view" id="v-quick">
-  <div class="card">
-    <h2>常用公式一覽表</h2>
-    <p class="small muted" style="margin:0 0 10px">點分類跳過去。考前一晚整張看一遍，看到哪個想不起來，就去下面的公式卡多翻幾次。</p>
-    <div class="chips" id="sheetChips"></div>
-  </div>
-  <div class="sheet-grid" id="sheet"></div>
+<div class="quick-top">
   <div class="card">
     <h2>公式卡</h2>
     <p class="small muted" style="margin:0 0 10px">先自己想答案，再點卡片翻面。</p>
@@ -291,6 +293,13 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg
       <button class="btn pri" id="mNext">下一題</button>
     </div>
   </div>
+</div>
+  <div class="card">
+    <h2>常用公式一覽表</h2>
+    <p class="small muted" style="margin:0 0 10px">點一類展開。考前一晚整張看一遍，看到想不起來的，就回上面的公式卡多翻幾次。</p>
+    <div class="row"><button class="btn small" id="shOpenAll">全部展開</button><button class="btn small" id="shCloseAll">全部收起</button></div>
+  </div>
+  <div class="sheet-grid" id="sheet"></div>
 </section>
 
 <!-- 模擬考 -->
@@ -1503,7 +1512,6 @@ function show(v){
   window.scrollTo(0,0);
   if(v==='learn')typeset($('#v-learn'));
   if(v==='home')typeset($('#v-home'));
-  if(v==='quick'&&!window.__sheetDone){window.__sheetDone=1;typeset($('#sheet'))}
 }
 document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(views.includes(h))show(h)});
@@ -1588,18 +1596,21 @@ function renderQ(){
 }
 function next(fromGrade){
   if(drill.stat!=='all'&&fromGrade){drill.list=drill.list.filter(p=>st(p.id)===drill.stat);if(drill.i>=drill.list.length)drill.i=Math.max(0,drill.list.length-1);resetQ();renderQ();return}
-  if(drill.i<drill.list.length-1){drill.i++;resetQ();renderQ();window.scrollTo(0,0)}else{renderQ()}
+  if(drill.i<drill.list.length-1){drill.i++;resetQ();renderQ();keepCard()}else{renderQ()}
 }
-$('#prevBtn').onclick=()=>{if(drill.i>0){drill.i--;resetQ();renderQ();window.scrollTo(0,0)}};
+$('#prevBtn').onclick=()=>{if(drill.i>0){drill.i--;resetQ();renderQ();keepCard()}};
+/* 換題時不跳回頁首；只有題目卡頂端跑出畫面上方時，才把題目卡頂端拉回來 */
+function keepCard(){const c=$('#qCard');const top=c.getBoundingClientRect().top;const navH=innerWidth>=760?70:12;if(top<navH)window.scrollBy(0,top-navH)}
 $('#nextBtn').onclick=()=>next(false);
 
 /* ---------- 公式一覽表 ---------- */
-$('#sheetChips').innerHTML=SHEET.map(g=>`<button class="chip" data-k="${g.key}">${g.title}</button>`).join('');
-$('#sheet').innerHTML=SHEET.map(g=>`<div class="card sheet-sec" id="sh-${g.key}"><h3 class="sh-title">${g.title}</h3>
+$('#sheet').innerHTML=SHEET.map(g=>`<details class="card sheet-sec" data-k="${g.key}"><summary class="sh-title"><span>${g.title}</span><span class="sh-count">${g.items.filter(x=>x[0]).length} 條</span></summary>
   <div class="sh-rows">${g.items.map(([n,f])=>`<div class="sh-row"><span class="sh-name">${n}</span><div class="sh-f">${f.split(/,\\quad\s*/).map(x=>`<div>\\(\\displaystyle ${x}\\)</div>`).join('')}</div></div>`).join('')}</div>
   ${g.table?`<div class="sh-table"><table>${TRIG_TABLE.map((r,i)=>`<tr>${r.map(c=>i===0?`<th>\\(${c}\\)</th>`:`<td>\\(${c}\\)</td>`).join('')}</tr>`).join('')}</table></div>`:''}
-</div>`).join('');
-document.querySelectorAll('#sheetChips .chip').forEach(c=>c.onclick=()=>{const el=document.getElementById('sh-'+c.dataset.k);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})});
+</details>`).join('');
+document.querySelectorAll('#sheet details').forEach(d=>d.addEventListener('toggle',()=>{if(d.open&&!d.dataset.ts){d.dataset.ts=1;typeset(d)}}));
+$('#shOpenAll').onclick=()=>document.querySelectorAll('#sheet details').forEach(d=>d.open=true);
+$('#shCloseAll').onclick=()=>document.querySelectorAll('#sheet details').forEach(d=>d.open=false);
 
 /* ---------- 速練：公式卡 ---------- */
 let fc={order:CARDS.map((_,i)=>i),i:0,back:false};
