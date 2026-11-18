@@ -127,6 +127,33 @@ table.gl td:first-child{font-family:Georgia,serif;font-style:italic;width:55%}
 .grade{display:flex;gap:6px;flex-wrap:wrap}
 .grade .btn{padding:6px 10px;font-size:14px}
 .grade .btn.sel{outline:3px solid var(--accent)}
+.sheet-grid{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
+.sheet-sec{scroll-margin-top:80px;min-width:0}
+.sh-f>div{max-width:100%;overflow-x:auto;overflow-y:hidden}
+.sh-title{font-family:var(--display);font-size:18px;margin:0 0 8px;padding-bottom:6px;border-bottom:2px solid var(--ink)}
+.sh-rows{display:flex;flex-direction:column}
+.sh-row{display:flex;flex-direction:column;gap:2px;padding:7px 0;border-bottom:1px solid var(--rule)}
+.sh-row:last-child{border-bottom:0}
+.sh-name{font-size:12px;color:var(--muted)}
+.sh-name:empty{display:none}
+.sh-f{overflow-x:auto;overflow-y:hidden;font-size:15px;display:flex;flex-wrap:wrap;column-gap:28px;row-gap:4px}
+.sh-table{overflow-x:auto;margin-top:10px}
+.sh-table table{border-collapse:collapse;width:100%;text-align:center;font-size:14px}
+.sh-table th,.sh-table td{border:1px solid var(--rule);padding:6px 4px}
+.sh-table th{background:var(--accent-soft)}
+/* 電腦與平板：選單移到上方、內容放寬 */
+@media (min-width:760px){
+  body{padding-bottom:24px;padding-top:58px}
+  nav.tabs{top:0;bottom:auto;border-top:0;border-bottom:1px solid var(--rule);gap:4px;padding:0 16px}
+  nav.tabs button{flex:0 1 auto;max-width:none;flex-direction:row;gap:8px;align-items:baseline;padding:14px 16px}
+  nav.tabs button b{font-size:17px}
+  header,main{max-width:1040px}
+  .qtext{font-size:19px}
+  #unitList{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+  .sheet-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #v-drill,#v-exam{max-width:860px;width:100%;margin:0 auto}
+  #toast{bottom:32px}
+}
 mjx-container{max-width:100%}
 .steps mjx-container,.ans mjx-container,.fbox mjx-container{font-size:92%}
 .qtext,.steps li,.ans,.fbox,.flash{overflow-y:hidden}
@@ -237,6 +264,12 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg
 <!-- 速練 -->
 <section class="view" id="v-quick">
   <div class="card">
+    <h2>常用公式一覽表</h2>
+    <p class="small muted" style="margin:0 0 10px">點分類跳過去。考前一晚整張看一遍，看到哪個想不起來，就去下面的公式卡多翻幾次。</p>
+    <div class="chips" id="sheetChips"></div>
+  </div>
+  <div class="sheet-grid" id="sheet"></div>
+  <div class="card">
     <h2>公式卡</h2>
     <p class="small muted" style="margin:0 0 10px">先自己想答案，再點卡片翻面。</p>
     <div class="flash" id="flash" role="button" tabindex="0"></div>
@@ -281,7 +314,7 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg
   <button data-v="home" class="on"><b>首頁</b>進度</button>
   <button data-v="learn"><b>觀念</b>重點</button>
   <button data-v="drill"><b>刷題</b>考古題</button>
-  <button data-v="quick"><b>速練</b>公式</button>
+  <button data-v="quick"><b>公式</b>一覽速練</button>
   <button data-v="exam"><b>模擬考</b>限時</button>
 </nav>
 
@@ -1265,6 +1298,132 @@ const HW_RAW = [
 
 const HW = HW_RAW.map(([sec,no,q,a,hint,steps])=>({id:'hw-'+sec+'-'+no, src:'習題', sec, no, week:SEC_WEEK[sec], topic:SEC_TOPIC[sec], pts:0, hw:true, q, a, hint, steps}));
 
+/* 常用公式一覽表 */
+const SHEET = [
+{key:'diff', title:'微分公式', items:[
+ ['常數、冪次', R`(c)'=0,\quad (x^n)'=nx^{n-1}`],
+ ['指數', R`(e^x)'=e^x,\quad (a^x)'=a^x\ln a`],
+ ['對數', R`(\ln|x|)'=\frac1x,\quad (\log_ax)'=\frac{1}{x\ln a}`],
+ ['sin、cos', R`(\sin x)'=\cos x,\quad (\cos x)'=-\sin x`],
+ ['tan、cot', R`(\tan x)'=\sec^2x,\quad (\cot x)'=-\csc^2x`],
+ ['sec、csc', R`(\sec x)'=\sec x\tan x,\quad (\csc x)'=-\csc x\cot x`],
+ ['反正弦、反餘弦', R`(\sin^{-1}x)'=\frac1{\sqrt{1-x^2}},\quad (\cos^{-1}x)'=-\frac1{\sqrt{1-x^2}}`],
+ ['反正切', R`(\tan^{-1}x)'=\frac1{1+x^2}`],
+ ['反正割', R`(\sec^{-1}x)'=\frac1{|x|\sqrt{x^2-1}}`],
+ ['雙曲', R`(\sinh x)'=\cosh x,\quad (\cosh x)'=\sinh x`],
+ ['乘法', R`(fg)'=f'g+fg'`],
+ ['除法', R`\left(\frac fg\right)'=\frac{f'g-fg'}{g^2}`],
+ ['連鎖律', R`\frac{d}{dx}f(g(x))=f'(g(x))\,g'(x)`],
+ ['反函數', R`(f^{-1})'(x)=\frac{1}{f'(f^{-1}(x))}`],
+ ['對數微分', R`y=f(x)^{g(x)}\Rightarrow\ln y=g\ln f,\ \ \frac{y'}{y}=g'\ln f+g\frac{f'}{f}`],
+ ['變限積分', R`\frac{d}{dx}\int_{h(x)}^{g(x)}f(t)\,dt=f(g(x))g'(x)-f(h(x))h'(x)`]
+]},
+{key:'log', title:'指數與對數', items:[
+ ['乘、除', R`\ln(ab)=\ln a+\ln b,\quad \ln\frac ab=\ln a-\ln b`],
+ ['次方', R`\ln a^r=r\ln a,\quad \ln\frac1x=-\ln x`],
+ ['特殊值', R`\ln1=0,\quad \ln e=1,\quad e^0=1`],
+ ['互為反函數', R`e^{\ln x}=x\ (x>0),\quad \ln e^x=x`],
+ ['換底', R`a^x=e^{x\ln a},\quad \log_ax=\frac{\ln x}{\ln a}`],
+ ['指數律', R`e^{a+b}=e^ae^b,\quad (e^a)^b=e^{ab},\quad e^{-x}=\frac1{e^x}`],
+ ['根號寫成次方', R`\sqrt[n]{x^m}=x^{m/n},\quad \frac1{\sqrt x}=x^{-1/2}`],
+ ['近似值', R`e\approx2.718,\quad \ln2\approx0.693,\quad \ln3\approx1.099`],
+ ['注意', R`\ln(a+b)\ne\ln a+\ln b,\quad (\ln x)^2\ne\ln x^2`]
+]},
+{key:'trig', title:'三角恆等式', items:[
+ ['平方關係', R`\sin^2x+\cos^2x=1`],
+ ['', R`1+\tan^2x=\sec^2x,\quad 1+\cot^2x=\csc^2x`],
+ ['倍角', R`\sin2x=2\sin x\cos x`],
+ ['', R`\cos2x=\cos^2x-\sin^2x=2\cos^2x-1=1-2\sin^2x`],
+ ['降冪', R`\sin^2x=\frac{1-\cos2x}2,\quad \cos^2x=\frac{1+\cos2x}2`],
+ ['三倍角', R`\cos^3x=\frac{3\cos x+\cos3x}4,\quad \sin^3x=\frac{3\sin x-\sin3x}4`],
+ ['和角', R`\sin(A\pm B)=\sin A\cos B\pm\cos A\sin B`],
+ ['', R`\cos(A\pm B)=\cos A\cos B\mp\sin A\sin B`],
+ ['', R`\tan(A-B)=\frac{\tan A-\tan B}{1+\tan A\tan B}`],
+ ['積化和差', R`\sin A\cos B=\tfrac12[\sin(A+B)+\sin(A-B)]`],
+ ['', R`\sin A\sin B=\tfrac12[\cos(A-B)-\cos(A+B)]`],
+ ['', R`\cos A\cos B=\tfrac12[\cos(A-B)+\cos(A+B)]`],
+ ['半角開根號', R`\sqrt{1-\cos x}=\sqrt2\left|\sin\tfrac x2\right|,\quad \sqrt{1+\cos x}=\sqrt2\left|\cos\tfrac x2\right|`],
+ ['餘角', R`\sin\left(\tfrac\pi2-x\right)=\cos x,\quad \cos\left(\tfrac\pi2-x\right)=\sin x`],
+ ['奇偶', R`\sin(-x)=-\sin x,\quad \cos(-x)=\cos x,\quad \tan(-x)=-\tan x`]
+], table:true},
+{key:'int', title:'基本積分公式', items:[
+ ['冪次', R`\int x^n\,dx=\frac{x^{n+1}}{n+1}+C\ \ (n\ne-1)`],
+ ['倒數', R`\int\frac1x\,dx=\ln|x|+C`],
+ ['指數', R`\int e^{ax}dx=\frac1ae^{ax}+C,\quad \int a^xdx=\frac{a^x}{\ln a}+C`],
+ ['sin、cos', R`\int\sin ax\,dx=-\frac1a\cos ax,\quad \int\cos ax\,dx=\frac1a\sin ax`],
+ ['平方型', R`\int\sec^2x\,dx=\tan x,\quad \int\csc^2x\,dx=-\cot x`],
+ ['乘積型', R`\int\sec x\tan x\,dx=\sec x,\quad \int\csc x\cot x\,dx=-\csc x`],
+ ['tan、cot', R`\int\tan x\,dx=\ln|\sec x|,\quad \int\cot x\,dx=\ln|\sin x|`],
+ ['sec', R`\int\sec x\,dx=\ln|\sec x+\tan x|`],
+ ['csc', R`\int\csc x\,dx=-\ln|\csc x+\cot x|`],
+ ['sec³', R`\int\sec^3x\,dx=\tfrac12\left(\sec x\tan x+\ln|\sec x+\tan x|\right)`],
+ ['反正切型', R`\int\frac{dx}{a^2+x^2}=\frac1a\tan^{-1}\frac xa`],
+ ['反正弦型', R`\int\frac{dx}{\sqrt{a^2-x^2}}=\sin^{-1}\frac xa`],
+ ['反正割型', R`\int\frac{dx}{x\sqrt{x^2-a^2}}=\frac1a\sec^{-1}\left|\frac xa\right|`],
+ ['ln 型根號', R`\int\frac{dx}{\sqrt{x^2\pm a^2}}=\ln\left|x+\sqrt{x^2\pm a^2}\right|`],
+ ['平方差', R`\int\frac{dx}{x^2-a^2}=\frac1{2a}\ln\left|\frac{x-a}{x+a}\right|`],
+ ['半圓', R`\int\sqrt{a^2-x^2}\,dx=\frac x2\sqrt{a^2-x^2}+\frac{a^2}2\sin^{-1}\frac xa`],
+ ['對數', R`\int\ln x\,dx=x\ln x-x,\quad \int x\ln x\,dx=\frac{x^2}2\ln x-\frac{x^2}4`],
+ ['指數乘三角', R`\int e^{ax}\cos bx\,dx=\frac{e^{ax}(a\cos bx+b\sin bx)}{a^2+b^2}`],
+ ['', R`\int e^{ax}\sin bx\,dx=\frac{e^{ax}(a\sin bx-b\cos bx)}{a^2+b^2}`],
+ ['f′/f', R`\int\frac{f'(x)}{f(x)}dx=\ln|f(x)|+C`]
+]},
+{key:'tech', title:'積分技巧速查', items:[
+ ['分部積分', R`\int u\,dv=uv-\int v\,du`],
+ ['挑 u 的順序', R`\text{對數}\to\text{反三角}\to\text{多項式}\to\text{三角}\to\text{指數}`],
+ ['三角代換', R`\sqrt{a^2-x^2}:\ x=a\sin\theta`],
+ ['', R`\sqrt{a^2+x^2}:\ x=a\tan\theta`],
+ ['', R`\sqrt{x^2-a^2}:\ x=a\sec\theta`],
+ ['部分分式', R`\frac{P(x)}{(x-a)(x-b)^2(x^2+1)}=\frac A{x-a}+\frac B{x-b}+\frac C{(x-b)^2}+\frac{Dx+E}{x^2+1}`],
+ ['二次分母', R`\int\frac{Dx+E}{x^2+1}dx=\frac D2\ln(x^2+1)+E\tan^{-1}x`],
+ ['sinᵐcosⁿ', R`\text{有奇次方：拆一個當 }du;\ \text{都偶次：降冪}`],
+ ['tanᵐsecⁿ', R`\sec\text{ 偶次：留 }\sec^2x;\ \tan\text{ 奇次：留 }\sec x\tan x`],
+ ['對稱', R`\int_{-a}^af\,dx=0\ (\text{奇}),\quad 2\int_0^af\,dx\ (\text{偶})`],
+ ['', R`\int_0^af(x)\,dx=\int_0^af(a-x)\,dx`]
+]},
+{key:'lim', title:'常用極限', items:[
+ ['三角', R`\lim_{x\to0}\frac{\sin x}x=1,\quad \lim_{x\to0}\frac{1-\cos x}{x^2}=\frac12`],
+ ['', R`\lim_{x\to0}\frac{x-\sin x}{x^3}=\frac16`],
+ ['e 的定義', R`\lim_{x\to\infty}\left(1+\frac ax\right)^{bx}=e^{ab},\quad \lim_{x\to0}(1+x)^{1/x}=e`],
+ ['指數、對數', R`\lim_{x\to0}\frac{e^x-1}x=1,\quad \lim_{x\to0}\frac{\ln(1+x)}x=1`],
+ ['誰長得快', R`\ln x\ll x^p\ll e^x\quad(x\to\infty,\ p>0)`],
+ ['', R`\lim_{x\to0^+}x^p\ln x=0,\quad \lim_{x\to\infty}x^ne^{-x}=0`],
+ ['反正切', R`\lim_{x\to\infty}\tan^{-1}x=\frac\pi2,\quad \lim_{x\to-\infty}\tan^{-1}x=-\frac\pi2`],
+ ['瑕積分 p 判別', R`\int_1^\infty\frac{dx}{x^p}\ \text{收斂}\iff p>1;\quad \int_0^1\frac{dx}{x^p}\ \text{收斂}\iff p<1`]
+]},
+{key:'app', title:'定積分應用', items:[
+ ['面積', R`A=\int_a^b|f(x)-g(x)|\,dx`],
+ ['平均值', R`\text{av}(f)=\frac1{b-a}\int_a^bf(x)\,dx`],
+ ['圓盤', R`V=\pi\int_a^bR(x)^2\,dx`],
+ ['墊圈', R`V=\pi\int_a^b\left[R(x)^2-r(x)^2\right]dx`],
+ ['圓柱殼', R`V=2\pi\int_a^b(\text{半徑})(\text{高})\,dx`],
+ ['弧長', R`L=\int_a^b\sqrt{1+(y')^2}\,dx=\int_c^d\sqrt{1+(x')^2}\,dy`],
+ ['曲面（繞 x 軸）', R`S=2\pi\int_a^by\sqrt{1+(y')^2}\,dx`],
+ ['曲面（繞 y 軸）', R`S=2\pi\int_c^dx\sqrt{1+(x')^2}\,dy`],
+ ['基本定理', R`\int_a^bf(x)\,dx=F(b)-F(a)`],
+ ['反函數積分', R`\int_a^bf\,dx+\int_{f(a)}^{f(b)}f^{-1}dx=bf(b)-af(a)`]
+]},
+{key:'sum', title:'求和與黎曼和', items:[
+ ['連加', R`\sum_{k=1}^nk=\frac{n(n+1)}2`],
+ ['平方和', R`\sum_{k=1}^nk^2=\frac{n(n+1)(2n+1)}6`],
+ ['立方和', R`\sum_{k=1}^nk^3=\left(\frac{n(n+1)}2\right)^2`],
+ ['黎曼和', R`\lim_{n\to\infty}\sum_{k=1}^nf\!\left(a+\tfrac{(b-a)k}n\right)\frac{b-a}n=\int_a^bf(x)\,dx`]
+]},
+{key:'hyp', title:'雙曲函數', items:[
+ ['定義', R`\sinh x=\frac{e^x-e^{-x}}2,\quad \cosh x=\frac{e^x+e^{-x}}2`],
+ ['恆等式', R`\cosh^2x-\sinh^2x=1`],
+ ['反函數', R`\sinh^{-1}x=\ln\left(x+\sqrt{x^2+1}\right)`],
+ ['', R`\cosh^{-1}x=\ln\left(x+\sqrt{x^2-1}\right)\ (x\ge1)`]
+]}
+];
+
+const TRIG_TABLE = [
+ ['\\theta','0','\\frac\\pi6','\\frac\\pi4','\\frac\\pi3','\\frac\\pi2'],
+ ['\\sin\\theta','0','\\frac12','\\frac{\\sqrt2}2','\\frac{\\sqrt3}2','1'],
+ ['\\cos\\theta','1','\\frac{\\sqrt3}2','\\frac{\\sqrt2}2','\\frac12','0'],
+ ['\\tan\\theta','0','\\frac{1}{\\sqrt3}','1','\\sqrt3','\\text{不存在}']
+];
+
 </script>
 <script>
 (function(){
@@ -1344,6 +1503,7 @@ function show(v){
   window.scrollTo(0,0);
   if(v==='learn')typeset($('#v-learn'));
   if(v==='home')typeset($('#v-home'));
+  if(v==='quick'&&!window.__sheetDone){window.__sheetDone=1;typeset($('#sheet'))}
 }
 document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(views.includes(h))show(h)});
@@ -1432,6 +1592,14 @@ function next(fromGrade){
 }
 $('#prevBtn').onclick=()=>{if(drill.i>0){drill.i--;resetQ();renderQ();window.scrollTo(0,0)}};
 $('#nextBtn').onclick=()=>next(false);
+
+/* ---------- 公式一覽表 ---------- */
+$('#sheetChips').innerHTML=SHEET.map(g=>`<button class="chip" data-k="${g.key}">${g.title}</button>`).join('');
+$('#sheet').innerHTML=SHEET.map(g=>`<div class="card sheet-sec" id="sh-${g.key}"><h3 class="sh-title">${g.title}</h3>
+  <div class="sh-rows">${g.items.map(([n,f])=>`<div class="sh-row"><span class="sh-name">${n}</span><div class="sh-f">${f.split(/,\\quad\s*/).map(x=>`<div>\\(\\displaystyle ${x}\\)</div>`).join('')}</div></div>`).join('')}</div>
+  ${g.table?`<div class="sh-table"><table>${TRIG_TABLE.map((r,i)=>`<tr>${r.map(c=>i===0?`<th>\\(${c}\\)</th>`:`<td>\\(${c}\\)</td>`).join('')}</tr>`).join('')}</table></div>`:''}
+</div>`).join('');
+document.querySelectorAll('#sheetChips .chip').forEach(c=>c.onclick=()=>{const el=document.getElementById('sh-'+c.dataset.k);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})});
 
 /* ---------- 速練：公式卡 ---------- */
 let fc={order:CARDS.map((_,i)=>i),i:0,back:false};
