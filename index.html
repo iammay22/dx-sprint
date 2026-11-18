@@ -107,6 +107,9 @@ table.gl td:first-child{font-family:Georgia,serif;font-style:italic;width:55%}
 .hintbox{border:1px dashed var(--accent);border-radius:8px;padding:8px 12px;font-size:15px}
 .status-ok{color:var(--ok);font-weight:700}
 .status-again{color:var(--bad);font-weight:700}
+.btn.small{padding:5px 10px;font-size:13px}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--sheet);padding:8px 16px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;z-index:20;transition:opacity .2s}
+#toast.on{opacity:1}
 .counter{font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
 .empty{text-align:center;color:var(--muted);padding:24px}
 /* 速練 */
@@ -1276,6 +1279,19 @@ Object.keys(store.st).forEach(k=>{if(typeof store.st[k]==='string')store.st[k]={
 function st(id){const v=store.st[id];return v&&v.s?v.s:'new'}
 function setSt(id,v){store.st[id]={s:v,t:Date.now()};save();renderHome();pushSoon()}
 
+/* ---------- 複製 ---------- */
+function toPlain(h){return h.replace(/<br\s*\/?>/g,'\n').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&')
+  .replace(/\\\[/g,'$$').replace(/\\\]/g,'$$').replace(/\\\(/g,'$').replace(/\\\)/g,'$').replace(/\\displaystyle\s*/g,'').trim()}
+function label(p){return p.hw?'課本 '+p.sec+' 第 '+p.no+' 題':p.src+' 期末考 第 '+p.no+' 題'}
+function qText(p){return label(p)+'\n'+toPlain(p.q)}
+function solText(p){return qText(p)+'\n\n解法：\n'+p.steps.map((x,i)=>(i+1)+'. '+toPlain(x)).join('\n')+'\n\n答案：'+toPlain(p.a)}
+let toastT=null;
+function toast(t){let el=$('#toast');if(!el){el=document.createElement('div');el.id='toast';el.setAttribute('role','status');document.body.appendChild(el)}el.textContent=t;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),1600)}
+async function copyText(t){
+  try{await navigator.clipboard.writeText(t);toast('已複製');return}catch(e){}
+  try{const ta=document.createElement('textarea');ta.value=t;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();toast(ok?'已複製':'這個瀏覽器不讓我複製，請長按題目文字');}catch(e){toast('這個瀏覽器不讓我複製，請長按題目文字')}
+}
+
 /* ---------- 跨裝置同步（Google 試算表後端） ---------- */
 const ENDPOINT='https://script.google.com/macros/s/AKfycbzGmxyDtn7gOSrNeAD_bmZTsVvZxz-XIjtS5jsFCuAi6YXGrNOiKWHs4hHUmbV_-CAg/exec';
 let syncCode='';try{syncCode=localStorage.getItem(KEY+'-code')||''}catch(e){}
@@ -1383,6 +1399,7 @@ function renderQ(){
   const p=drill.list[drill.i],s=st(p.id),allShown=drill.full||drill.shown>=p.steps.length;
   c.innerHTML=`<div class="qhead"><div class="row"><span class="tag">${p.hw?'課本 '+p.sec+' 第 '+p.no+' 題':p.src+' 第 '+p.no+' 題'}</span>${p.hw?'<span class="tag">第 '+p.week+' 週習題</span>':''}<span class="tag">${TOPICS[p.topic]}</span>${p.hard?'<span class="tag hard">難</span>':''}</div><span class="small muted">${p.pts?p.pts+' 分':''} ${s==='ok'?'<span class="status-ok">· 會了</span>':s==='again'?'<span class="status-again">· 再練</span>':''}</span></div>
    <div class="qtext">${p.q}</div>
+   <div class="row" style="margin:0 0 8px"><button class="btn small" id="cpQ">複製題目</button>${allShown?'<button class="btn small" id="cpS">複製題目和詳解</button>':''}</div>
    <p class="small muted" style="margin:0 0 10px">先在紙上自己寫，卡住再往下看。</p>
    ${drill.hint?`<div class="hintbox"><b>提示</b>　${p.hint}</div>`:''}
    ${drill.shown||drill.full?`<ol class="steps" style="margin-top:10px">${p.steps.slice(0,drill.full?p.steps.length:drill.shown).map(x=>`<li>${x}</li>`).join('')}</ol>`:''}
@@ -1397,6 +1414,8 @@ function renderQ(){
    </div>`;
   $('#qCounter').textContent=`${drill.i+1} / ${drill.list.length}`;
   $('#prevBtn').disabled=drill.i===0;$('#nextBtn').disabled=drill.i>=drill.list.length-1;
+  $('#cpQ').onclick=()=>copyText(qText(p));
+  const cs=$('#cpS');if(cs)cs.onclick=()=>copyText(solText(p));
   const h=$('#bHint');if(h)h.onclick=()=>{drill.hint=true;renderQ()};
   const b=$('#bStep');if(b)b.onclick=()=>{drill.shown++;renderQ()};
   const a=$('#bAll');if(a)a.onclick=()=>{drill.full=true;renderQ()};
@@ -1483,18 +1502,22 @@ function renderExam(){
    </div>
    <div class="row" style="margin:10px 0 14px">
      ${e.submitted?'':`<button class="btn" id="pauseBtn">${e.running?'暫停計時':'繼續計時'}</button><button class="btn pri" id="subBtn">交卷，對答案</button>`}
+     <button class="btn" id="cpAll">複製整份題目</button>
      <button class="btn" id="quitBtn">${e.submitted?'回到模擬考首頁':'放棄這份'}</button>
    </div>
    ${e.submitted?'<p class="small" style="margin:0 0 12px">對照解答幫自己批改。半對（方法對、計算錯）給一半。批成「錯」或「半對」的題目會自動加進刷題的「還要再練」。</p>':''}
    <div style="display:flex;flex-direction:column;gap:12px">${e.qs.map((p,i)=>`<div class="mq">
      <div class="row" style="justify-content:space-between"><b>第 ${i+1} 題</b><span class="small muted">${p.pts} 分 · ${p.src} ${p.no}</span></div>
      <div class="qtext">${p.q}</div>
+     <div class="row"><button class="btn small cpm" data-i="${i}">複製題目</button></div>
      ${e.submitted?`<details><summary class="small" style="cursor:pointer;color:var(--accent)">看詳解</summary><ol class="steps" style="margin-top:8px">${p.steps.map(x=>`<li>${x}</li>`).join('')}</ol></details>
        <div class="ans"><b>答案</b>　${p.a}</div>
        <div class="grade">${[[1,'全對','ok'],[.5,'半對',''],[0,'錯','bad']].map(([v,l,c])=>`<button class="btn ${c} ${e.grade[p.id]===v?'sel':''}" data-id="${p.id}" data-v="${v}">${l}</button>`).join('')}</div>`:''}
    </div>`).join('')}</div>`;
   const pb=$('#pauseBtn');if(pb)pb.onclick=()=>{e.running=!e.running;renderExam()};
   const sb=$('#subBtn');if(sb)sb.onclick=submit;
+  $('#cpAll').onclick=()=>copyText(e.title+'\n\n'+e.qs.map((p,i)=>'第 '+(i+1)+' 題（'+p.pts+' 分）\n'+toPlain(p.q)).join('\n\n'));
+  el.querySelectorAll('.cpm').forEach(b=>b.onclick=()=>copyText(qText(e.qs[+b.dataset.i])));
   $('#quitBtn').onclick=()=>{clearInterval(timerId);exam=null;$('#examPaper').style.display='none';$('#examSetup').style.display='block'};
   el.querySelectorAll('.grade .btn').forEach(b=>b.onclick=()=>{const v=+b.dataset.v;e.grade[b.dataset.id]=v;setSt(b.dataset.id,v===1?'ok':'again');renderExam()});
   typeset(el);
