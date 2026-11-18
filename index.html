@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微積分乙期末衝刺</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* 版面概念：方格計算紙上的考卷，藍筆寫題、紅筆批改、螢光筆劃重點 */
+:root{
+  --paper:#f4f6f8; --sheet:#ffffff; --ink:#1b2a41; --muted:#5b6b80; --rule:#dde3ea;
+  --accent:#2457c5; --accent-soft:#e3ebfb; --mark:#ffe46b; --ok:#1e8a52; --ok-soft:#dff3e8;
+  --bad:#c8322b; --bad-soft:#fbe4e2;
+  --display:"Noto Serif TC","Songti TC",serif; --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#11161d; --sheet:#1a212b; --ink:#e6ecf3; --muted:#9aa8b8; --rule:#2b3542;
+  --accent:#7aa2ff; --accent-soft:#1f2c48; --mark:#8a7417; --ok:#4cc488; --ok-soft:#173828;
+  --bad:#ff7b72; --bad-soft:#3d1d1b; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --paper:#11161d; --sheet:#1a212b; --ink:#e6ecf3; --muted:#9aa8b8; --rule:#2b3542;
+  --accent:#7aa2ff; --accent-soft:#1f2c48; --mark:#8a7417; --ok:#4cc488; --ok-soft:#173828;
+  --bad:#ff7b72; --bad-soft:#3d1d1b; color-scheme:dark;}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.7;
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);
+  background-size:24px 24px;background-attachment:fixed;padding-bottom:84px}
+header{padding:20px 16px 8px;max-width:760px;margin:0 auto}
+h1{font-family:var(--display);font-weight:900;font-size:26px;margin:0;line-height:1.3;text-wrap:balance}
+h2{font-family:var(--display);font-size:20px;margin:0 0 8px;text-wrap:balance}
+h3{font-size:16px;margin:0 0 6px}
+.sub{color:var(--muted);font-size:14px;margin:4px 0 0}
+main{max-width:760px;margin:0 auto;padding:0 16px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:16px}
+.view{display:none;flex-direction:column;gap:14px}
+.view.on{display:flex}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--sheet);border-top:1px solid var(--rule);display:flex;justify-content:center;z-index:5;padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs button{flex:1;max-width:150px;background:none;border:0;padding:10px 4px 12px;font:inherit;font-size:13px;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav.tabs button b{font-size:17px;font-family:var(--display)}
+nav.tabs button.on{color:var(--accent)}
+nav.tabs button.on b{box-shadow:inset 0 -7px 0 var(--mark)}
+button{font:inherit}
+.btn{border:1px solid var(--rule);background:var(--sheet);color:var(--ink);padding:9px 14px;border-radius:8px;cursor:pointer;font-size:15px}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+:root[data-theme="dark"] .btn.pri{color:#0d1420}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.pri{color:#0d1420}}
+.btn.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.btn.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.btn:disabled{opacity:.45;cursor:default}
+button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chip{white-space:nowrap;border:1px solid var(--rule);background:var(--sheet);border-radius:99px;padding:5px 12px;font-size:14px;cursor:pointer;color:var(--ink)}
+.chip.on{background:var(--ink);color:var(--sheet);border-color:var(--ink)}
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:500}
+.tag.hard{background:var(--bad-soft);color:var(--bad)}
+.mark{background:linear-gradient(transparent 55%,var(--mark) 55%)}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+select{font:inherit;font-size:14px;padding:6px 8px;border-radius:8px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink)}
+/* 首頁 */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{border:1px solid var(--rule);border-radius:8px;padding:10px;text-align:center;background:var(--sheet)}
+.stat .n{font-family:var(--display);font-size:26px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1.2}
+.stat .l{font-size:12px;color:var(--muted)}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:7.5em 1fr 3em;gap:8px;align-items:center;font-size:14px}
+.bar .track{height:14px;background:var(--paper);border-radius:3px;overflow:hidden;border:1px solid var(--rule)}
+.bar .fill{height:100%;background:var(--accent)}
+.bar .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+ol.plan{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px}
+ol.plan li::marker{font-family:var(--display);font-weight:900;color:var(--accent)}
+.prog{display:flex;flex-direction:column;gap:6px}
+.prow{display:grid;grid-template-columns:7.5em 1fr 3.4em;gap:8px;align-items:center;font-size:14px;cursor:pointer}
+.prow .track{height:10px;background:var(--paper);border-radius:3px;overflow:hidden;display:flex;border:1px solid var(--rule)}
+.prow .g{background:var(--ok)} .prow .r{background:var(--bad)}
+.prow.wk{grid-template-columns:7.5em 1fr 3.4em}
+.prow .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px}
+/* 觀念 */
+details.unit{background:var(--sheet);border:1px solid var(--rule);border-radius:10px}
+details.unit>summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;gap:10px;align-items:baseline;justify-content:space-between}
+details.unit>summary::-webkit-details-marker{display:none}
+details.unit>summary .t{font-weight:700;font-size:17px}
+details.unit>summary .f{font-size:12px;color:var(--muted);text-align:right}
+details.unit[open]>summary{border-bottom:1px dashed var(--rule)}
+.ubody{padding:12px 16px 16px;display:flex;flex-direction:column;gap:12px}
+.ubody ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.fbox{background:var(--accent-soft);border-radius:8px;padding:10px 12px;overflow-x:auto;display:flex;flex-direction:column;gap:6px}
+.trap{border-left:4px solid var(--bad);padding:4px 10px;background:var(--bad-soft);border-radius:0 8px 8px 0}
+.trap ul{padding-left:1.1em}
+.note{border-left:4px solid var(--mark);padding:8px 12px;background:var(--sheet);border-radius:0 8px 8px 0;font-size:15px}
+table.gl{width:100%;border-collapse:collapse;font-size:14px}
+table.gl td{border-bottom:1px solid var(--rule);padding:6px 4px;vertical-align:top}
+table.gl td:first-child{font-family:Georgia,serif;font-style:italic;width:55%}
+/* 題目卡 */
+.qhead{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.qtext{font-size:17px;overflow-x:auto;padding:6px 0}
+.steps{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;padding:8px 10px 8px 38px;position:relative;background:var(--paper);border-radius:8px;overflow-x:auto}
+.steps li::before{content:counter(s);position:absolute;left:10px;top:8px;width:20px;height:20px;border-radius:50%;background:var(--accent);color:var(--sheet);font-size:12px;display:grid;place-items:center;font-weight:700}
+.ans{border:2px solid var(--ok);border-radius:8px;padding:8px 12px;background:var(--ok-soft);overflow-x:auto}
+.hintbox{border:1px dashed var(--accent);border-radius:8px;padding:8px 12px;font-size:15px}
+.status-ok{color:var(--ok);font-weight:700}
+.status-again{color:var(--bad);font-weight:700}
+.counter{font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
+.empty{text-align:center;color:var(--muted);padding:24px}
+/* 速練 */
+.flash{min-height:150px;display:grid;place-items:center;text-align:center;cursor:pointer;font-size:19px;user-select:none;border:2px solid var(--ink);border-radius:12px;background:var(--sheet);padding:16px;overflow-x:auto}
+.flash.back{border-color:var(--accent);background:var(--accent-soft)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{text-align:center}
+.opt.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:700}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+/* 模擬考 */
+.timer{font-family:var(--display);font-size:30px;font-weight:900;font-variant-numeric:tabular-nums}
+.mq{border-top:1px solid var(--rule);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.mq:first-child{border-top:0;padding-top:0}
+.score{font-family:var(--display);font-size:44px;font-weight:900;line-height:1}
+.grade{display:flex;gap:6px;flex-wrap:wrap}
+.grade .btn{padding:6px 10px;font-size:14px}
+.grade .btn.sel{outline:3px solid var(--accent)}
+mjx-container{max-width:100%}
+.steps mjx-container,.ans mjx-container,.fbox mjx-container{font-size:92%}
+.qtext,.steps li,.ans,.fbox,.flash{overflow-y:hidden}
+mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;margin:.4em 0!important}
+@media (prefers-reduced-motion:no-preference){.card,.flash{transition:background .2s,border-color .2s}}
+@media (max-width:420px){.opts{grid-template-columns:1fr}.bar,.prow{grid-template-columns:7.2em 1fr 3em}}
+</style>
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'},startup:{typeset:false}};
+</script>
+<script id="mj" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js';document.head.appendChild(s)"></script>
+</head>
+<body>
+<header>
+  <h1>微積分乙（一）期末衝刺</h1>
+  <p class="sub">範圍：課本 4.5 到 8.7。題庫有 8 份臺師大期末考考古題 <span id="nExam"></span> 題，加上老師指定的課本習題 <span id="nHw"></span> 題，每題都有逐步解。</p>
+</header>
+<main>
+
+<!-- 首頁 -->
+<section class="view on" id="v-home">
+  <div class="card">
+    <h2>跨裝置同步</h2>
+    <div id="syncBox"></div>
+  </div>
+  <div class="card">
+    <h2>你的進度</h2>
+    <div class="stats">
+      <div class="stat"><div class="n" id="sOk">0</div><div class="l">已經會了</div></div>
+      <div class="stat"><div class="n" id="sAgain">0</div><div class="l">還要再練</div></div>
+      <div class="stat"><div class="n" id="sLeft">0</div><div class="l">還沒做</div></div>
+    </div>
+    <p class="small muted" style="margin:10px 0 6px">各單元：綠色是會了，紅色是要再練。點一列直接去練那個單元。</p>
+    <div class="prog" id="progList"></div>
+  </div>
+
+  <div class="card">
+    <h2>指定習題</h2>
+    <p class="small muted" style="margin:0 0 10px">照老師的週次排好了。點一週直接開始寫。</p>
+    <div class="prog" id="hwWeeks"></div>
+  </div>
+
+  <div class="card">
+    <h2>考古題都在考什麼</h2>
+    <p class="small muted" style="margin:0 0 10px">把 8 份期末考的配分加總後換算成百分比，大約是這樣：</p>
+    <div class="bars" id="weightBars"></div>
+    <p class="small" style="margin:12px 0 0">積分技巧佔一半以上，而且一題 8 分。期中 55 分要拉到 100，最划算的是先把積分練到又快又準，再補羅必達和體積。</p>
+  </div>
+
+  <div class="card">
+    <h2>建議讀書順序</h2>
+    <ol class="plan">
+      <li><b>基本公式和變數變換</b>：先把「速練」裡的公式卡刷到全對，再做變數變換的題目。後面每一招都會用到。</li>
+      <li><b>五大積分技巧</b>：分部積分、三角積分、三角代換、部分分式。每個單元先讀觀念，再刷題。刷完去「速練」玩招式判斷，練到看一眼就知道用哪招。</li>
+      <li><b>羅必達和微積分基本定理</b>：題型很固定，練個十題分數就穩了。</li>
+      <li><b>面積、體積、弧長、曲面</b>：重點是畫圖和選對方法，計算通常不難。</li>
+      <li><b>瑕積分和壓軸題</b>：\(\int_0^1\ln x\,dx=-1\) 這種常客先拿下。</li>
+      <li><b>指定習題</b>：每週的課本習題照進度寫，首頁「指定習題」那張卡會標出這週。習題比考古題基本，寫順了再去刷考古題。</li>
+      <li><b>考前一週</b>：每兩三天做一份模擬考，限時 110 分鐘。最後一次做「114 上」整卷，那是去年同學期的考卷。</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>考試時怎麼拿滿分</h2>
+    <ul style="margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px">
+      <li>每份考卷都寫「無計算過程不給分」。代換要寫 \(u=\ldots\)、\(du=\ldots\)，瑕積分要寫 \(\lim\)。</li>
+      <li>不定積分最後一定加 \(+C\)。</li>
+      <li>不會的題目先跳，寫完會的再回來。部分分式寫出拆法、三角代換寫出代換式，都有步驟分。</li>
+      <li>留 10 分鐘把不定積分的答案微分一次，看能不能變回原本的被積函數。這是唯一能自己對答案的方法。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 觀念 -->
+<section class="view" id="v-learn">
+  <div class="note">每個單元點開看重點、公式和常見錯誤，讀完按最下面的按鈕直接刷那個單元的考古題。</div>
+  <div id="unitList" style="display:flex;flex-direction:column;gap:10px"></div>
+  <div class="note" id="skipNote"></div>
+  <div class="card">
+    <h2>考卷英文對照</h2>
+    <p class="small muted" style="margin:0 0 8px">考卷大多是英文，這些字要一眼看懂。</p>
+    <table class="gl" id="glossary"></table>
+  </div>
+</section>
+
+<!-- 刷題 -->
+<section class="view" id="v-drill">
+  <div class="card" style="display:flex;flex-direction:column;gap:10px">
+    <div class="chips" id="topicChips"></div>
+    <div class="row">
+      <label class="small" for="examSel">來源</label>
+      <select id="examSel"></select>
+      <label class="small" for="statSel">狀態</label>
+      <select id="statSel">
+        <option value="all">全部</option><option value="new">還沒做</option>
+        <option value="again">還要再練</option><option value="ok">已經會了</option>
+      </select>
+    </div>
+  </div>
+  <div class="card" id="qCard"></div>
+  <div class="row" style="justify-content:space-between">
+    <button class="btn" id="prevBtn">上一題</button>
+    <span class="counter" id="qCounter"></span>
+    <button class="btn" id="nextBtn">下一題</button>
+  </div>
+</section>
+
+<!-- 速練 -->
+<section class="view" id="v-quick">
+  <div class="card">
+    <h2>公式卡</h2>
+    <p class="small muted" style="margin:0 0 10px">先自己想答案，再點卡片翻面。</p>
+    <div class="flash" id="flash" role="button" tabindex="0"></div>
+    <div class="row" style="justify-content:space-between;margin-top:10px">
+      <button class="btn" id="fPrev">上一張</button>
+      <span class="counter" id="fCount"></span>
+      <button class="btn" id="fNext">下一張</button>
+    </div>
+    <div class="row" style="margin-top:8px"><button class="btn" id="fShuffle">洗牌</button></div>
+  </div>
+  <div class="card">
+    <h2>招式判斷</h2>
+    <p class="small muted" style="margin:0 0 10px">只看題目，選第一步要用的方法。這是考試時最花時間的地方。</p>
+    <div class="qtext" id="mQ"></div>
+    <div class="opts" id="mOpts"></div>
+    <div id="mFeed" class="small" style="margin-top:10px;min-height:1.5em"></div>
+    <div class="row" style="justify-content:space-between;margin-top:8px">
+      <span class="counter" id="mScore"></span>
+      <button class="btn pri" id="mNext">下一題</button>
+    </div>
+  </div>
+</section>
+
+<!-- 模擬考 -->
+<section class="view" id="v-exam">
+  <div class="card" id="examSetup">
+    <h2>模擬考</h2>
+    <p class="small" style="margin:0 0 10px">隨機卷會照考古題的比重抽題：羅必達 2 題、積分技巧 6 題、體積 1 題、弧長或曲面 1 題、瑕積分或基本定理 1 題、壓軸 1 題。拿紙筆寫，寫完再對答案自己批改。</p>
+    <div class="row">
+      <button class="btn pri" id="genExam">產生隨機模擬卷</button>
+      <select id="pastSel" aria-label="選一份考古題"></select>
+      <button class="btn" id="pastBtn">寫整份考古題</button>
+    </div>
+  </div>
+  <div class="card" id="examPaper" style="display:none"></div>
+</section>
+
+</main>
+<footer style="text-align:center;font-size:12px;color:var(--muted);padding:16px 0 8px">作者：may22</footer>
+
+<nav class="tabs" aria-label="主選單">
+  <button data-v="home" class="on"><b>首頁</b>進度</button>
+  <button data-v="learn"><b>觀念</b>重點</button>
+  <button data-v="drill"><b>刷題</b>考古題</button>
+  <button data-v="quick"><b>速練</b>公式</button>
+  <button data-v="exam"><b>模擬考</b>限時</button>
+</nav>
+
+<script>
+const R = String.raw;
+
+/* 題庫：全部來自 8 份臺師大微積分乙（一）期末考考古題 */
+const EXAMS = [
+  {id:'114上', name:'114 學年度上學期', date:'2025.12.17', total:100, note:'去年同一學期，最接近你要考的'},
+  {id:'114暑', name:'114 學年度暑期先修', date:'2025', total:120, note:'難度偏高，有證明題'},
+  {id:'113暑', name:'113 學年度暑期', date:'2025.08.15', total:110, note:''},
+  {id:'113上', name:'113 學年度上學期', date:'2024.12', total:105, note:''},
+  {id:'112上', name:'112 學年度上學期', date:'2023.12.20', total:100, note:''},
+  {id:'111上', name:'111 學年度上學期', date:'2022.12.21', total:108, note:''},
+  {id:'110', name:'110 學年度', date:'2021', total:105, note:''},
+  {id:'109上', name:'109 學年度上學期', date:'2020', total:100, note:''}
+];
+
+const TOPICS = {
+  lhop:'羅必達法則', basic:'基本積分', ftc:'微積分基本定理', riemann:'黎曼和與平均值',
+  sub:'變數變換', parts:'分部積分', trig:'三角積分', tsub:'三角代換', pf:'部分分式',
+  imp:'瑕積分', vol:'面積與體積', arc:'弧長與曲面面積', adv:'壓軸綜合題'
+};
+
+const P = [
+/* ===================== 114上 ===================== */
+{id:'114a-1a', src:'114上', no:'1(1)', pts:8, topic:'vol',
+ q:R`設 \(D\) 是由 \(y=\sqrt{9-x^2}\)、\(x=-1\)、\(y=0\)、\(y=x\) 圍成的區域，求 \(D\) 的面積。`,
+ a:R`\(\dfrac{9\pi}{8}+\sqrt2+\dfrac92\sin^{-1}\dfrac13\)`,
+ hint:R`先畫圖。左邊是 \(x=-1\)，上面是半圓，下面在 \(x<0\) 時是 \(y=0\)，在 \(x>0\) 時是 \(y=x\)。`,
+ steps:[
+  R`找交點：\(y=x\) 和半圓交在 \(x=\frac{3}{\sqrt2}\)（因為 \(x^2=9-x^2\)）。`,
+  R`區域要拆兩段：\[A=\int_{-1}^{0}\sqrt{9-x^2}\,dx+\int_{0}^{3/\sqrt2}\left(\sqrt{9-x^2}-x\right)dx\]`,
+  R`合併成 \(\displaystyle\int_{-1}^{3/\sqrt2}\sqrt{9-x^2}\,dx-\int_0^{3/\sqrt2}x\,dx\)，後面那塊是 \(\frac94\)。`,
+  R`用公式 \(\int\sqrt{a^2-x^2}\,dx=\frac x2\sqrt{a^2-x^2}+\frac{a^2}{2}\sin^{-1}\frac xa\)：上限代入得 \(\frac94+\frac{9\pi}{8}\)，下限代入得 \(-\sqrt2-\frac92\sin^{-1}\frac13\)。`,
+  R`相減再扣掉 \(\frac94\)：\(A=\frac{9\pi}{8}+\sqrt2+\frac92\sin^{-1}\frac13\approx 6.478\)。`
+ ]},
+{id:'114a-1b', src:'114上', no:'1(2)', pts:6, topic:'vol',
+ q:R`同上的區域 \(D\)，繞 \(x\) 軸旋轉，求體積。`,
+ a:R`\(\dfrac{26\pi}{3}+9\sqrt2\,\pi\)`,
+ hint:R`用墊圈法，一樣拆成 \(x<0\) 和 \(x>0\) 兩段。`,
+ steps:[
+  R`\(-1\le x\le 0\)：外半徑 \(\sqrt{9-x^2}\)，內半徑 0（下緣是 \(x\) 軸）。`,
+  R`\(0\le x\le \frac3{\sqrt2}\)：外半徑 \(\sqrt{9-x^2}\)，內半徑 \(x\)。`,
+  R`\[V=\pi\int_{-1}^{0}(9-x^2)\,dx+\pi\int_0^{3/\sqrt2}(9-2x^2)\,dx\]`,
+  R`第一段 \(\pi\left(9-\frac13\right)=\frac{26\pi}{3}\)；第二段 \(\pi\left(\frac{27}{\sqrt2}-\frac{9}{\sqrt2}\right)=9\sqrt2\,\pi\)。`
+ ]},
+{id:'114a-2', src:'114上', no:'2', pts:6, topic:'arc',
+ q:R`求曲線 \(y=\sqrt{2x-x^2}\)，\(1\le x\le 1.5\)，繞 \(x\) 軸旋轉的曲面面積。`,
+ a:R`\(\pi\)`,
+ hint:R`先算 \(y\sqrt{1+(y')^2}\)，會整個變成常數。`,
+ steps:[
+  R`\(y'=\dfrac{1-x}{\sqrt{2x-x^2}}\)，所以 \(y\sqrt{1+(y')^2}=\sqrt{y^2+(yy')^2}=\sqrt{(2x-x^2)+(1-x)^2}=1\)。`,
+  R`\[S=2\pi\int_1^{1.5}y\sqrt{1+(y')^2}\,dx=2\pi\int_1^{1.5}1\,dx=\pi\]`,
+  R`這題其實是半徑 1 的球面帶。曲面題常常會這樣整個化簡掉，算到很醜通常是算錯了。`
+ ]},
+{id:'114a-3-1', src:'114上', no:'3(1)', pts:8, topic:'trig', m:'三角積分',
+ q:R`\(\displaystyle\int_0^{\pi/2}\cos^3(3\theta)\sin^2(6\theta)\,d\theta\)`,
+ a:R`\(-\dfrac{32}{315}\)`,
+ hint:R`先用倍角把 \(\sin 6\theta\) 拆成 \(2\sin3\theta\cos3\theta\)。`,
+ steps:[
+  R`\(\sin^2 6\theta=4\sin^2 3\theta\cos^2 3\theta\)，被積函數變成 \(4\sin^2 3\theta\cos^5 3\theta\)。`,
+  R`cos 是奇次方，留一個 \(\cos 3\theta\) 給 \(du\)。令 \(u=\sin3\theta\)，\(du=3\cos3\theta\,d\theta\)。`,
+  R`換上下限：\(\theta=0\to u=0\)，\(\theta=\frac\pi2\to u=\sin\frac{3\pi}2=-1\)。這裡最容易錯，上限是 \(-1\) 不是 1。`,
+  R`\[\frac43\int_0^{-1}u^2(1-u^2)^2\,du=-\frac43\left(\frac13-\frac25+\frac17\right)=-\frac43\cdot\frac{8}{105}=-\frac{32}{315}\]`
+ ]},
+{id:'114a-3-2', src:'114上', no:'3(2)', pts:8, topic:'parts', m:'分部積分',
+ q:R`\(\displaystyle\int x^3\sin(2x)\,dx\)`,
+ a:R`\(-\frac{x^3}{2}\cos2x+\frac{3x^2}{4}\sin2x+\frac{3x}{4}\cos2x-\frac38\sin2x+C\)`,
+ hint:R`多項式乘三角函數，用表格法，左欄一直微分、右欄一直積分。`,
+ steps:[
+  R`左欄 \(x^3,\ 3x^2,\ 6x,\ 6,\ 0\)；右欄 \(\sin2x,\ -\frac12\cos2x,\ -\frac14\sin2x,\ \frac18\cos2x,\ \frac1{16}\sin2x\)。`,
+  R`斜線相乘，正負交替：\(+x^3\cdot(-\frac12\cos2x)\)、\(-3x^2\cdot(-\frac14\sin2x)\)、\(+6x\cdot\frac18\cos2x\)、\(-6\cdot\frac1{16}\sin2x\)。`,
+  R`整理：\(-\frac{x^3}{2}\cos2x+\frac{3x^2}{4}\sin2x+\frac{3x}{4}\cos2x-\frac38\sin2x+C\)。`
+ ]},
+{id:'114a-3-3', src:'114上', no:'3(3)', pts:8, topic:'pf', m:'部分分式',
+ q:R`\(\displaystyle\int\frac{2x^2-6x+4}{(x^2+1)(x-1)^3}\,dx\)`,
+ a:R`\(2\ln|x-1|+\dfrac{1}{x-1}-\ln(x^2+1)-\tan^{-1}x+C\)`,
+ hint:R`分子可以因式分解，先約掉一個 \(x-1\)。`,
+ steps:[
+  R`\(2x^2-6x+4=2(x-1)(x-2)\)，所以被積函數 \(=\dfrac{2(x-2)}{(x^2+1)(x-1)^2}\)。先約分會省很多力。`,
+  R`拆成 \(\dfrac{A}{x-1}+\dfrac{B}{(x-1)^2}+\dfrac{Cx+D}{x^2+1}\)。`,
+  R`\(x=1\) 代入：\(2(-1)=2B\)，\(B=-1\)。比較係數得 \(A=2,\ C=-2,\ D=-1\)。`,
+  R`\[\int\left(\frac{2}{x-1}-\frac{1}{(x-1)^2}-\frac{2x+1}{x^2+1}\right)dx\]`,
+  R`\(=2\ln|x-1|+\frac1{x-1}-\ln(x^2+1)-\tan^{-1}x+C\)`
+ ]},
+{id:'114a-3-4', src:'114上', no:'3(4)', pts:8, topic:'parts', m:'分部積分',
+ q:R`\(\displaystyle\int\tan^{-1}\!\left(\sqrt x\right)dx\)`,
+ a:R`\((x+1)\tan^{-1}\sqrt x-\sqrt x+C\)`,
+ hint:R`反三角函數單獨出現：\(u=\tan^{-1}\sqrt x\)，\(dv=dx\)。`,
+ steps:[
+  R`\(u=\tan^{-1}\sqrt x\)，\(du=\dfrac{1}{1+x}\cdot\dfrac{1}{2\sqrt x}dx\)；\(v=x\)。`,
+  R`\[x\tan^{-1}\sqrt x-\int\frac{x}{2\sqrt x(1+x)}dx=x\tan^{-1}\sqrt x-\int\frac{\sqrt x}{2(1+x)}dx\]`,
+  R`後面令 \(w=\sqrt x\)，\(dx=2w\,dw\)：\(\int\frac{w^2}{1+w^2}dw=w-\tan^{-1}w\)。`,
+  R`答案：\(x\tan^{-1}\sqrt x-\sqrt x+\tan^{-1}\sqrt x+C=(x+1)\tan^{-1}\sqrt x-\sqrt x+C\)`
+ ]},
+{id:'114a-3-5', src:'114上', no:'3(5)', pts:8, topic:'pf', m:'部分分式', hard:true,
+ q:R`\(\displaystyle\int\sqrt[3]{\tan x}\,dx\)`,
+ a:R`\(\frac14\ln(w^2-w+1)-\frac12\ln(w+1)+\frac{\sqrt3}{2}\tan^{-1}\frac{2w-1}{\sqrt3}+C,\ w=\tan^{2/3}x\)`,
+ hint:R`令 \(u^3=\tan x\)，再令 \(w=u^2\)，最後是 \(\frac{w}{1+w^3}\) 的部分分式。`,
+ steps:[
+  R`\(u=\sqrt[3]{\tan x}\)，\(x=\tan^{-1}u^3\)，\(dx=\dfrac{3u^2}{1+u^6}du\)。積分變 \(\displaystyle\int\frac{3u^3}{1+u^6}du\)。`,
+  R`令 \(w=u^2\)，\(dw=2u\,du\)：\(\displaystyle\frac32\int\frac{w}{1+w^3}dw\)。`,
+  R`\(1+w^3=(w+1)(w^2-w+1)\)，拆成 \(\dfrac{w}{1+w^3}=-\dfrac{1/3}{w+1}+\dfrac13\cdot\dfrac{w+1}{w^2-w+1}\)。`,
+  R`\(\dfrac{w+1}{w^2-w+1}=\dfrac12\cdot\dfrac{2w-1}{w^2-w+1}+\dfrac32\cdot\dfrac{1}{(w-\frac12)^2+\frac34}\)，積出來是 \(\frac12\ln(w^2-w+1)+\sqrt3\tan^{-1}\frac{2w-1}{\sqrt3}\)。`,
+  R`乘回 \(\frac32\cdot\frac13=\frac12\)：\(\frac14\ln(w^2-w+1)+\frac{\sqrt3}{2}\tan^{-1}\frac{2w-1}{\sqrt3}-\frac12\ln(w+1)+C\)，\(w=\tan^{2/3}x\)。`,
+  R`這題是那張考卷最難的一題，時間不夠可以先跳，最後再回來拿步驟分。`
+ ]},
+{id:'114a-3-6', src:'114上', no:'3(6)', pts:8, topic:'sub', m:'代換',
+ q:R`\(\displaystyle\int\ln(x)\cdot x^{\ln(x)-1}\,dx\)`,
+ a:R`\(\dfrac12x^{\ln x}+C\)`,
+ hint:R`把 \(x^{\ln x}\) 寫成 \(e^{(\ln x)^2}\)，微分看看。`,
+ steps:[
+  R`\(x^{\ln x-1}=\dfrac{x^{\ln x}}{x}=\dfrac{e^{(\ln x)^2}}{x}\)，所以被積函數是 \(\dfrac{\ln x}{x}e^{(\ln x)^2}\)。`,
+  R`令 \(u=(\ln x)^2\)，\(du=\dfrac{2\ln x}{x}dx\)。`,
+  R`\(\displaystyle\frac12\int e^u\,du=\frac12e^{(\ln x)^2}+C=\frac12x^{\ln x}+C\)`
+ ]},
+{id:'114a-3-7', src:'114上', no:'3(7)', pts:8, topic:'sub', m:'對稱技巧',
+ q:R`\(\displaystyle\int_0^{2025}\frac{\sqrt x}{\sqrt x+\sqrt{2025-x}}\,dx\)`,
+ a:R`\(\dfrac{2025}{2}\)`,
+ hint:R`令 \(x=2025-u\)，得到的新積分和原本相加。`,
+ steps:[
+  R`設原積分為 \(I\)。令 \(x=2025-u\)：\(I=\displaystyle\int_0^{2025}\frac{\sqrt{2025-u}}{\sqrt{2025-u}+\sqrt u}du\)。`,
+  R`兩式相加，分子分母一樣：\(2I=\displaystyle\int_0^{2025}1\,dx=2025\)。`,
+  R`\(I=\dfrac{2025}{2}\)。看到 \(\int_0^a\frac{f(x)}{f(x)+f(a-x)}dx\) 這種長相，答案一定是 \(\frac a2\)。`
+ ]},
+{id:'114a-3-8', src:'114上', no:'3(8)', pts:8, topic:'trig', m:'代換',
+ q:R`\(\displaystyle\int\frac{\sin^2x}{1+\cos^2x}\,dx\)`,
+ a:R`\(\sqrt2\tan^{-1}\!\left(\dfrac{\tan x}{\sqrt2}\right)-x+C\)`,
+ hint:R`\(\sin^2x=2-(1+\cos^2x)\)，拆開之後分子分母同除 \(\cos^2x\)。`,
+ steps:[
+  R`\(\dfrac{\sin^2x}{1+\cos^2x}=\dfrac{2-(1+\cos^2x)}{1+\cos^2x}=\dfrac{2}{1+\cos^2x}-1\)。`,
+  R`同除 \(\cos^2x\)：\(\dfrac{2}{1+\cos^2x}=\dfrac{2\sec^2x}{\sec^2x+1}=\dfrac{2\sec^2x}{\tan^2x+2}\)。`,
+  R`令 \(u=\tan x\)：\(\displaystyle\int\frac{2}{u^2+2}du=\sqrt2\tan^{-1}\frac{u}{\sqrt2}\)。`,
+  R`答案：\(\sqrt2\tan^{-1}\!\left(\frac{\tan x}{\sqrt2}\right)-x+C\)`
+ ]},
+{id:'114a-4-1', src:'114上', no:'4(1)', pts:8, topic:'lhop',
+ q:R`\(\displaystyle\lim_{t\to(-2)^+}\int_t^2\frac{5t+10}{x^2-x-6}\,dx\)`,
+ a:R`\(0\)（若題目分子是 \(5x+10\) 則為 \(-5\ln5\)）`,
+ hint:R`積分變數是 \(x\)，所以 \(5t+10\) 可以提出去。最後會遇到 \(0\cdot\infty\)。`,
+ steps:[
+  R`\(5t+10=5(t+2)\) 是常數，提出：\(5(t+2)\displaystyle\int_t^2\frac{dx}{(x-3)(x+2)}\)。`,
+  R`部分分式：\(\dfrac{1}{(x-3)(x+2)}=\dfrac15\left(\dfrac1{x-3}-\dfrac1{x+2}\right)\)，所以積分 \(=\frac15\left[\ln\left|\frac{x-3}{x+2}\right|\right]_t^2=\frac15\left(-\ln4-\ln(3-t)+\ln(t+2)\right)\)。`,
+  R`乘回去：\((t+2)\left(-\ln4-\ln(3-t)\right)+(t+2)\ln(t+2)\)。`,
+  R`前面 \(\to0\cdot\)有限值 \(=0\)。後面令 \(s=t+2\to0^+\)，\(s\ln s=\dfrac{\ln s}{1/s}\) 用羅必達 \(\to\dfrac{1/s}{-1/s^2}=-s\to0\)。答案 0。`,
+  R`如果你考試看到的是 \(5x+10\)：被積函數化成 \(\frac{5}{x-3}\)，\(\int_t^2\frac5{x-3}dx=-5\ln(3-t)\to-5\ln5\)。兩種都會一下比較保險。`
+ ]},
+{id:'114a-4-2', src:'114上', no:'4(2)', pts:8, topic:'lhop',
+ q:R`\(\displaystyle\lim_{x\to0}\left(\csc^2x-\frac1{x^2}\right)\)`,
+ a:R`\(\dfrac13\)`,
+ hint:R`\(\infty-\infty\) 先通分，再拆成三個好算的極限相乘。`,
+ steps:[
+  R`通分：\(\dfrac{x^2-\sin^2x}{x^2\sin^2x}=\dfrac{(x-\sin x)(x+\sin x)}{x^2\sin^2x}\)。`,
+  R`拆成 \(\dfrac{x-\sin x}{x^3}\cdot\dfrac{x+\sin x}{x}\cdot\dfrac{x^2}{\sin^2x}\)。`,
+  R`\(\dfrac{x-\sin x}{x^3}\) 連用三次羅必達：\(\frac{1-\cos x}{3x^2}\to\frac{\sin x}{6x}\to\frac16\)。`,
+  R`另外兩個分別 \(\to2\) 和 \(\to1\)。答案 \(\frac16\cdot2\cdot1=\frac13\)。`,
+  R`直接對原本的分式硬用羅必達也行，但會微到很長，拆開比較不會算錯。`
+ ]},
+
+/* ===================== 114暑 ===================== */
+{id:'114s-1', src:'114暑', no:'1', pts:8, topic:'adv', type:'tf',
+ q:R`是非題：<br>(a) 連續函數都可微。<br>(b) 連續函數都有反導數。<br>(c) \(\lim_{t\to0}\frac{2t-\sin t}{2t-\cos t}\overset{L}{=}\lim\frac{2-\cos t}{2+\sin t}\overset{L}{=}\lim\frac{\sin t}{\cos t}=0\)<br>(d) \(\lim_{x\to\infty}x\tan\frac1x=\lim\frac{\tan(1/x)}{1/x}\overset{L}{=}\lim\sec^2\frac1x=1\)<br>(e) \(\int_{-2}^{3}\frac{1}{x+1}dx=\ln|x+1|\big|_{-2}^{3}=\ln4\)<br>(f) 兩曲線在 \(a\le x\le b\) 間的面積是 \(\int_a^b(f(x)-g(x))dx\)<br>(g) \(f\) 在 \([1,\infty)\) 連續且 \(\lim_{x\to\infty}f(x)=0\)，則 \(\int_1^\infty f(x)dx\) 收斂<br>(h) \(f\) 在 \([a,b]\) 連續，則存在 \(c\) 使 \(f(c)=\frac1{b-a}\int_a^bf(x)dx\)`,
+ a:R`(a) ✗ (b) ○ (c) ✗ (d) ○ (e) ✗ (f) ✗ (g) ✗ (h) ○`,
+ hint:R`每一題都在測一個常犯的錯。想想反例。`,
+ steps:[
+  R`(a) ✗：\(|x|\) 連續但在 0 不可微。`,
+  R`(b) ○：微積分基本定理第一部分，\(F(x)=\int_a^xf(t)dt\) 就是反導數。`,
+  R`(c) ✗：一開始 \(t\to0\) 時分母 \(\to-1\)，不是 \(\frac00\)，根本不能用羅必達。第二個式子其實 \(\to\frac12\)，等號不成立。`,
+  R`(d) ○：\(\frac00\) 型，分子微分 \(\sec^2(\frac1x)\cdot(-\frac1{x^2})\)，分母 \(-\frac1{x^2}\)，約掉剩 \(\sec^2\frac1x\to1\)。`,
+  R`(e) ✗：\(x=-1\) 在區間裡面，函數爆掉，這是瑕積分而且發散。`,
+  R`(f) ✗：要加絕對值 \(\int_a^b|f-g|dx\)，曲線可能交叉。`,
+  R`(g) ✗：\(f(x)=\frac1x\) 趨近 0，但 \(\int_1^\infty\frac1xdx\) 發散。`,
+  R`(h) ○：積分的均值定理。`
+ ]},
+{id:'114s-2', src:'114暑', no:'2', pts:6, topic:'ftc',
+ q:R`(a) \(\displaystyle\int_0^1\frac{d}{dx}\left(e^{x^2}\right)dx\)　(b) \(\displaystyle\frac{d}{dx}\left(\int_0^1e^{x^2}dx\right)\)　(c) \(\displaystyle\frac{d}{dx}\left(\int_0^xe^{t^2}dt\right)\)`,
+ a:R`(a) \(e-1\)　(b) \(0\)　(c) \(e^{x^2}\)`,
+ hint:R`看清楚哪個是常數。`,
+ steps:[
+  R`(a) 先微後積，等於 \(e^{x^2}\big|_0^1=e-1\)。`,
+  R`(b) \(\int_0^1e^{x^2}dx\) 是一個數字，常數微分是 0。`,
+  R`(c) 基本定理：\(e^{x^2}\)。`
+ ]},
+{id:'114s-3a', src:'114暑', no:'3(a)', pts:6, topic:'lhop',
+ q:R`\(\displaystyle\lim_{x\to0^+}(\csc x-\cot x)\)`,
+ a:R`\(0\)`,
+ hint:R`寫成 sin、cos 再通分。`,
+ steps:[
+  R`\(\csc x-\cot x=\dfrac{1-\cos x}{\sin x}\)，是 \(\frac00\)。`,
+  R`羅必達：\(\dfrac{\sin x}{\cos x}\to0\)。`
+ ]},
+{id:'114s-3b', src:'114暑', no:'3(b)', pts:6, topic:'lhop',
+ q:R`\(\displaystyle\lim_{x\to\infty}\left(1+\frac ax\right)^{bx}\)`,
+ a:R`\(e^{ab}\)`,
+ hint:R`\(1^\infty\) 型，取 ln。`,
+ steps:[
+  R`\(\ln L=\lim bx\ln(1+\frac ax)=\lim\dfrac{b\ln(1+a/x)}{1/x}\)，\(\frac00\)。`,
+  R`微分：\(\dfrac{b\cdot\frac{-a/x^2}{1+a/x}}{-1/x^2}=\dfrac{ab}{1+a/x}\to ab\)。`,
+  R`\(L=e^{ab}\)。記得最後要取 \(e\) 回來，很多人停在 \(ab\) 被扣分。`
+ ]},
+{id:'114s-4a', src:'114暑', no:'4(a)', pts:6, topic:'riemann',
+ q:R`\(\displaystyle\int_2^5\left(3-|3-x|\right)dx\)`,
+ a:R`\(\dfrac{13}{2}\)`,
+ hint:R`絕對值在 \(x=3\) 拆開。`,
+ steps:[
+  R`\(2\le x\le3\)：\(3-(3-x)=x\)；\(3\le x\le5\)：\(3-(x-3)=6-x\)。`,
+  R`\(\int_2^3x\,dx=\frac52\)，\(\int_3^5(6-x)dx=4\)。合計 \(\frac{13}{2}\)。`,
+  R`也可以畫圖看成梯形加三角形來驗算。`
+ ]},
+{id:'114s-4b', src:'114暑', no:'4(b)', pts:6, topic:'sub', m:'代換',
+ q:R`\(\displaystyle\int\frac1{\theta^2}\cot^2\!\left(\frac1\theta\right)d\theta\)`,
+ a:R`\(\cot\frac1\theta+\frac1\theta+C\)`,
+ hint:R`\(u=\frac1\theta\)，再用 \(\cot^2=\csc^2-1\)。`,
+ steps:[
+  R`\(u=\frac1\theta\)，\(du=-\frac1{\theta^2}d\theta\)：\(-\int\cot^2u\,du\)。`,
+  R`\(-\int(\csc^2u-1)du=\cot u+u+C\)。`,
+  R`換回：\(\cot\frac1\theta+\frac1\theta+C\)。`
+ ]},
+{id:'114s-4c', src:'114暑', no:'4(c)', pts:6, topic:'tsub', m:'配方',
+ q:R`\(\displaystyle\int\frac1{\sqrt{2x-x^2}}dx\)`,
+ a:R`\(\sin^{-1}(x-1)+C\)`,
+ hint:R`配方。`,
+ steps:[
+  R`\(2x-x^2=1-(x-1)^2\)。`,
+  R`\(\displaystyle\int\frac{dx}{\sqrt{1-(x-1)^2}}=\sin^{-1}(x-1)+C\)`
+ ]},
+{id:'114s-4d', src:'114暑', no:'4(d)', pts:6, topic:'sub', m:'代換',
+ q:R`\(\displaystyle\int\frac1{1-e^x}dx\)`,
+ a:R`\(x-\ln|1-e^x|+C\)`,
+ hint:R`分子加一個 \(e^x\) 減一個 \(e^x\)。`,
+ steps:[
+  R`\(\dfrac{1}{1-e^x}=\dfrac{(1-e^x)+e^x}{1-e^x}=1+\dfrac{e^x}{1-e^x}\)。`,
+  R`\(\int\frac{e^x}{1-e^x}dx=-\ln|1-e^x|\)（令 \(u=1-e^x\)）。`,
+  R`答案 \(x-\ln|1-e^x|+C\)。另一個做法是分子分母同乘 \(e^{-x}\)。`
+ ]},
+{id:'114s-5a', src:'114暑', no:'5(a)', pts:7, topic:'sub', m:'代換',
+ q:R`\(\displaystyle\int_1^e\frac{\ln x}{x\sqrt{1+(\ln x)^2}}dx\)`,
+ a:R`\(\sqrt2-1\)`,
+ hint:R`\(u=\ln x\)，上下限一起換。`,
+ steps:[
+  R`\(u=\ln x\)，\(du=\frac{dx}x\)，\(x:1\to e\) 變 \(u:0\to1\)。`,
+  R`\(\displaystyle\int_0^1\frac{u}{\sqrt{1+u^2}}du=\sqrt{1+u^2}\Big|_0^1=\sqrt2-1\)`
+ ]},
+{id:'114s-5b', src:'114暑', no:'5(b)', pts:7, topic:'parts', m:'代換＋分部',
+ q:R`\(\displaystyle\int2x^3\sin(x^2)\,dx\)`,
+ a:R`\(-x^2\cos(x^2)+\sin(x^2)+C\)`,
+ hint:R`先 \(u=x^2\)，再分部積分。`,
+ steps:[
+  R`\(2x^3dx=x^2\cdot2x\,dx\)，令 \(u=x^2\)：\(\int u\sin u\,du\)。`,
+  R`分部：\(-u\cos u+\int\cos u\,du=-u\cos u+\sin u\)。`,
+  R`答案 \(-x^2\cos(x^2)+\sin(x^2)+C\)。`
+ ]},
+{id:'114s-5c', src:'114暑', no:'5(c)', pts:7, topic:'trig', m:'三角積分',
+ q:R`\(\displaystyle\int(\cos^2x-\cos^4x)\,dx\)`,
+ a:R`\(\dfrac x8-\dfrac{\sin4x}{32}+C\)`,
+ hint:R`提 \(\cos^2x\)，剩下 \(1-\cos^2x\)。`,
+ steps:[
+  R`\(\cos^2x(1-\cos^2x)=\sin^2x\cos^2x=\frac14\sin^22x\)。`,
+  R`降冪：\(\frac14\cdot\frac{1-\cos4x}{2}=\frac18-\frac18\cos4x\)。`,
+  R`積分：\(\frac x8-\frac{\sin4x}{32}+C\)。`
+ ]},
+{id:'114s-5d', src:'114暑', no:'5(d)', pts:7, topic:'pf', m:'部分分式',
+ q:R`\(\displaystyle\int\frac{x^4-2x^2+4x+1}{x^3-x^2-x+1}dx\)`,
+ a:R`\(\dfrac{x^2}2+x+\ln\left|\dfrac{x-1}{x+1}\right|-\dfrac{2}{x-1}+C\)`,
+ hint:R`分子次數比較高，先長除法。分母 \(=(x-1)^2(x+1)\)。`,
+ steps:[
+  R`長除法：商 \(x+1\)，餘式 \(4x\)。所以被積函數 \(=x+1+\dfrac{4x}{(x-1)^2(x+1)}\)。`,
+  R`\(\dfrac{4x}{(x-1)^2(x+1)}=\dfrac{A}{x-1}+\dfrac{B}{(x-1)^2}+\dfrac{C}{x+1}\)。\(x=1\)：\(4=2B\)，\(B=2\)。\(x=-1\)：\(-4=4C\)，\(C=-1\)。比較 \(x^2\) 係數：\(A+C=0\)，\(A=1\)。`,
+  R`\[\int\left(x+1+\frac1{x-1}+\frac2{(x-1)^2}-\frac1{x+1}\right)dx\]`,
+  R`\(=\frac{x^2}2+x+\ln|x-1|-\ln|x+1|-\frac2{x-1}+C\)`
+ ]},
+{id:'114s-6a', src:'114暑', no:'6(a)', pts:8, topic:'imp', m:'分部積分',
+ q:R`\(\displaystyle\int_0^1\frac{\ln x}{4\sqrt x}dx\)`,
+ a:R`\(-1\)`,
+ hint:R`下限 0 讓 \(\ln x\) 爆掉，寫成極限。先算不定積分。`,
+ steps:[
+  R`\(\int x^{-1/2}\ln x\,dx\)：\(u=\ln x\)，\(dv=x^{-1/2}dx\)，\(v=2\sqrt x\)。得 \(2\sqrt x\ln x-\int\frac{2\sqrt x}{x}dx=2\sqrt x\ln x-4\sqrt x\)。`,
+  R`\[\int_0^1\frac{\ln x}{4\sqrt x}dx=\frac14\lim_{a\to0^+}\left[2\sqrt x\ln x-4\sqrt x\right]_a^1\]`,
+  R`\(\sqrt a\ln a=\dfrac{\ln a}{a^{-1/2}}\overset{L}{\to}\dfrac{1/a}{-\frac12a^{-3/2}}=-2\sqrt a\to0\)。`,
+  R`\(=\frac14(-4-0)=-1\)`
+ ]},
+{id:'114s-6b', src:'114暑', no:'6(b)', pts:6, topic:'lhop',
+ q:R`\(\displaystyle\lim_{x\to1}\frac{1+\int_0^{x^2}\frac{\ln t}{4\sqrt t}dt}{\sqrt x\ln x-2\sqrt x+2}\)`,
+ a:R`\(2\)`,
+ hint:R`用 6(a)：\(x=1\) 時分子 \(=1+(-1)=0\)。所以是 \(\frac00\)。`,
+ steps:[
+  R`代 \(x=1\)：分子 \(1+(-1)=0\)，分母 \(0-2+2=0\)。可以用羅必達。`,
+  R`分子微分（基本定理加連鎖律）：\(\dfrac{\ln x^2}{4\sqrt{x^2}}\cdot2x=\dfrac{2\ln x}{4x}\cdot2x=\ln x\)。`,
+  R`分母微分：\(\frac{\ln x}{2\sqrt x}+\frac{\sqrt x}{x}-\frac1{\sqrt x}=\frac{\ln x}{2\sqrt x}\)。`,
+  R`相除 \(=2\sqrt x\to2\)。`
+ ]},
+{id:'114s-7', src:'114暑', no:'7', pts:20, topic:'adv', hard:true,
+ q:R`\(f\) 在 \(\mathbb R\) 上可微且一對一，\([f'(x)]^2-[f(x)]^2=1\)、\(f'(x)>0\)，且 \(\lim_{x\to0}\frac{f(x)}{x}=L\) 存在。<br>(a) 求 \(f^{-1}(0)\)　(b) 證明 \(\frac{d}{dx}f^{-1}(x)=\frac1{\sqrt{1+x^2}}\)　(c) 求 \(f^{-1}(x)\)　(d) 求 \(f(x)\)`,
+ a:R`(a) 0　(c) \(\ln(x+\sqrt{1+x^2})\)　(d) \(\dfrac{e^x-e^{-x}}{2}\)`,
+ hint:R`(a) 分母趨近 0 而極限存在，分子也要趨近 0。(b) 反函數微分 \((f^{-1})'(x)=\frac1{f'(f^{-1}(x))}\)。`,
+ steps:[
+  R`(a) \(x\to0\) 時分母 \(\to0\) 而極限存在，所以 \(f(0)=\lim f(x)=0\)，也就是 \(f^{-1}(0)=0\)。`,
+  R`(b) 因為 \(f'>0\)，\(f'=\sqrt{1+f^2}\)。令 \(y=f^{-1}(x)\)，則 \(f(y)=x\)，兩邊微分 \(f'(y)y'=1\)，\(y'=\dfrac1{\sqrt{1+f(y)^2}}=\dfrac1{\sqrt{1+x^2}}\)。`,
+  R`(c) \(f^{-1}(x)=\int\frac{dx}{\sqrt{1+x^2}}=\ln(x+\sqrt{1+x^2})+C\)，代 \(f^{-1}(0)=0\) 得 \(C=0\)。`,
+  R`(d) 解 \(y=\ln(x+\sqrt{1+x^2})\)：\(e^y-x=\sqrt{1+x^2}\)，平方 \(e^{2y}-2xe^y=1\)，\(x=\frac{e^y-e^{-y}}2\)。所以 \(f(x)=\frac{e^x-e^{-x}}2\)。`
+ ]},
+{id:'114s-8', src:'114暑', no:'8', pts:8, topic:'parts', hard:true,
+ q:R`\(f(0)=1\)、\(f'(0)=2\)，且 \(\displaystyle\int_0^\pi\left[f(x)+f''(x)\right]\sin x\,dx=3\)，求 \(f(\pi)\)。`,
+ a:R`\(f(\pi)=2\)`,
+ hint:R`只對 \(\int f''\sin x\,dx\) 做兩次分部積分，會冒出 \(-\int f\sin x\) 把前面消掉。`,
+ steps:[
+  R`\(\int_0^\pi f''\sin x\,dx=\left[f'\sin x\right]_0^\pi-\int_0^\pi f'\cos x\,dx\)，第一項因為 \(\sin0=\sin\pi=0\) 是 0。`,
+  R`\(\int_0^\pi f'\cos x\,dx=\left[f\cos x\right]_0^\pi+\int_0^\pi f\sin x\,dx=-f(\pi)-f(0)+\int_0^\pi f\sin x\,dx\)。`,
+  R`所以 \(\int_0^\pi f''\sin x\,dx=f(\pi)+f(0)-\int_0^\pi f\sin x\,dx\)。`,
+  R`代回題目：\(f(\pi)+f(0)=3\)，\(f(\pi)=2\)。\(f'(0)=2\) 是用來混淆的，沒用到。`
+ ]},
+
+/* ===================== 113暑 ===================== */
+{id:'113s-1a', src:'113暑', no:'1(a)', pts:6, topic:'lhop',
+ q:R`\(\displaystyle\lim_{x\to0^+}x^2\ln x\)`, a:R`\(0\)`,
+ hint:R`\(0\cdot\infty\)，把 \(x^2\) 丟到分母。`,
+ steps:[R`\(\dfrac{\ln x}{x^{-2}}\)，\(\frac{\infty}{\infty}\)。`, R`\(\dfrac{1/x}{-2x^{-3}}=-\dfrac{x^2}{2}\to0\)`]},
+{id:'113s-1b', src:'113暑', no:'1(b)', pts:6, topic:'lhop',
+ q:R`\(\displaystyle\lim_{k\to\infty}\left(1+\frac\pi k\right)^k\)`, a:R`\(e^\pi\)`,
+ hint:R`跟 \(\left(1+\frac ax\right)^{bx}\) 同一型。`,
+ steps:[R`\(\ln L=\lim\dfrac{\ln(1+\pi/k)}{1/k}\overset L=\lim\dfrac{\pi}{1+\pi/k}=\pi\)`, R`\(L=e^\pi\)`]},
+{id:'113s-2a', src:'113暑', no:'2(a)', pts:8, topic:'basic', m:'基本公式',
+ q:R`\(\displaystyle\int\left(x+\sqrt x+1+\frac1{\sqrt x}+\frac1x\right)dx\)`,
+ a:R`\(\frac{x^2}2+\frac23x^{3/2}+x+2\sqrt x+\ln|x|+C\)`, hint:R`逐項用冪次公式，\(\frac1x\) 例外。`,
+ steps:[R`寫成冪次 \(x^1+x^{1/2}+x^0+x^{-1/2}+x^{-1}\)。`, R`\(\frac{x^2}2+\frac23x^{3/2}+x+2x^{1/2}+\ln|x|+C\)`]},
+{id:'113s-2b', src:'113暑', no:'2(b)', pts:8, topic:'parts', m:'分部積分',
+ q:R`\(\displaystyle\int(x^2\sin x+\cos^2x)\,dx\)`,
+ a:R`\(-x^2\cos x+2x\sin x+2\cos x+\frac x2+\frac{\sin2x}4+C\)`, hint:R`拆兩塊：前面表格法，後面降冪。`,
+ steps:[R`表格法：\(x^2,2x,2,0\) 配 \(\sin x,-\cos x,-\sin x,\cos x\)：\(-x^2\cos x+2x\sin x+2\cos x\)。`,
+  R`\(\cos^2x=\frac{1+\cos2x}2\)，積分 \(\frac x2+\frac{\sin2x}4\)。`, R`相加再 \(+C\)。`]},
+{id:'113s-2c', src:'113暑', no:'2(c)', pts:8, topic:'trig', m:'三角積分',
+ q:R`\(\displaystyle\int(\tan^2x+\tan^4x)\,dx\)`, a:R`\(\dfrac{\tan^3x}{3}+C\)`, hint:R`提出 \(\tan^2x\)。`,
+ steps:[R`\(\tan^2x(1+\tan^2x)=\tan^2x\sec^2x\)。`, R`\(u=\tan x\)：\(\int u^2du=\frac{\tan^3x}3+C\)`]},
+{id:'113s-2d', src:'113暑', no:'2(d)', pts:8, topic:'tsub', m:'代換',
+ q:R`\(\displaystyle\int\frac{2x}{\sqrt{1+x^4}}dx\)`, a:R`\(\ln\left(x^2+\sqrt{1+x^4}\right)+C\)`,
+ hint:R`\(u=x^2\)，變成 \(\int\frac{du}{\sqrt{1+u^2}}\)。`,
+ steps:[R`\(u=x^2\)，\(du=2x\,dx\)：\(\int\frac{du}{\sqrt{1+u^2}}\)。`,
+  R`令 \(u=\tan\theta\)：\(\int\sec\theta\,d\theta=\ln|\sec\theta+\tan\theta|=\ln(u+\sqrt{1+u^2})\)。`,
+  R`答案 \(\ln(x^2+\sqrt{1+x^4})+C\)。這個結果建議直接背起來，111 年也考過一模一樣的。`]},
+{id:'113s-2e', src:'113暑', no:'2(e)', pts:8, topic:'pf', m:'代換＋部分分式',
+ q:R`\(\displaystyle\int\frac{e^x}{e^{2x}-3e^x+2}dx\)`, a:R`\(\ln\left|\dfrac{e^x-2}{e^x-1}\right|+C\)`,
+ hint:R`\(u=e^x\)。`,
+ steps:[R`\(u=e^x\)，\(du=e^xdx\)：\(\int\frac{du}{(u-1)(u-2)}\)。`,
+  R`\(\frac1{(u-1)(u-2)}=\frac1{u-2}-\frac1{u-1}\)。`, R`\(\ln|u-2|-\ln|u-1|=\ln\left|\frac{e^x-2}{e^x-1}\right|+C\)`]},
+{id:'113s-2f', src:'113暑', no:'2(f)', pts:8, topic:'tsub', m:'對稱＋三角代換',
+ q:R`\(\displaystyle\int_{-1}^1(x^3+3)\sqrt{4-x^2}\,dx\)`, a:R`\(3\sqrt3+2\pi\)`,
+ hint:R`\(x^3\sqrt{4-x^2}\) 是奇函數。`,
+ steps:[R`奇函數在對稱區間積分為 0，只剩 \(3\int_{-1}^1\sqrt{4-x^2}dx=6\int_0^1\sqrt{4-x^2}dx\)。`,
+  R`\(\int\sqrt{4-x^2}dx=\frac x2\sqrt{4-x^2}+2\sin^{-1}\frac x2\)。`,
+  R`\(6\left(\frac{\sqrt3}2+2\cdot\frac\pi6\right)=3\sqrt3+2\pi\)`]},
+{id:'113s-3', src:'113暑', no:'3', pts:14, topic:'imp', m:'分部積分',
+ q:R`\(a>0\)。(a) 求 \(\int x\ln x\,dx\)　(b) 若 \(\int_0^ax\ln x\,dx=0\)，求 \(a\)。`,
+ a:R`(a) \(\frac{x^2}2\ln x-\frac{x^2}4+C\)　(b) \(a=\sqrt e\)`, hint:R`\(u=\ln x\)。(b) 下限是瑕積分，用 \(\lim x^2\ln x=0\)。`,
+ steps:[R`(a) \(u=\ln x\)，\(dv=x\,dx\)：\(\frac{x^2}2\ln x-\int\frac x2dx=\frac{x^2}2\ln x-\frac{x^2}4+C\)。`,
+  R`(b) 下限：\(\lim_{x\to0^+}\left(\frac{x^2}2\ln x-\frac{x^2}4\right)=0\)（上一題 \(x^2\ln x\to0\)）。`,
+  R`所以 \(\frac{a^2}2\ln a-\frac{a^2}4=0\)，\(a>0\) 可以約掉 \(a^2\)：\(\ln a=\frac12\)，\(a=\sqrt e\)。`]},
+{id:'113s-4', src:'113暑', no:'4', pts:8, topic:'riemann',
+ q:R`求 \(g(x)=|x|-1\) 在 \([-1,3]\) 的平均值。`, a:R`\(\dfrac14\)`, hint:R`平均值 \(=\frac1{b-a}\int_a^bg\)。`,
+ steps:[R`\(\int_{-1}^3|x|dx=\frac12+\frac92=5\)，\(\int_{-1}^31\,dx=4\)，所以 \(\int g=1\)。`, R`平均值 \(=\frac{1}{4}\cdot1=\frac14\)。別忘了除以區間長度 4。`]},
+{id:'113s-5', src:'113暑', no:'5', pts:8, topic:'ftc',
+ q:R`\(f\) 連續且 \(\displaystyle\int_0^{x^3}f(3t^2-6t)\,dt=\ln x\)，求 \(f(2025)\)。（提示：\(2025=27\times75\)）`, a:R`\(\dfrac1{81}\)`,
+ hint:R`兩邊對 \(x\) 微分。`,
+ steps:[R`兩邊微分：\(f(3x^6-6x^3)\cdot3x^2=\frac1x\)，所以 \(f(3x^6-6x^3)=\frac1{3x^3}\)。`,
+  R`要讓 \(3x^6-6x^3=2025\)。令 \(u=x^3\)：\(u^2-2u-675=0\)，\(u=27\) 或 \(-25\)。`,
+  R`\(\ln x\) 要求 \(x>0\)，所以 \(u=x^3=27\)。\(f(2025)=\frac1{3\cdot27}=\frac1{81}\)。`]},
+{id:'113s-6', src:'113暑', no:'6', pts:10, topic:'riemann',
+ q:R`\(f(x)=\frac1{1+x}\) 在 \([0,2]\)，分成 \(n\) 等份，第 \(k\) 個子區間 \(\left[\frac{2(k-1)}n,\frac{2k}n\right]\) 任選 \(c_k\)，\(S_n=\frac2n\sum f(c_k)\)。<br>(a) \(S_1>S_2\) 一定成立嗎？(b) \(S_4\) 最大值？(c) \(\lim S_n\)？`,
+ a:R`(a) 不一定　(b) \(\dfrac{77}{60}\)　(c) \(\ln3\)`, hint:R`\(f\) 遞減，所以每段取左端點最大、右端點最小。`,
+ steps:[R`(a) 不一定。\(c_1=2\) 時 \(S_1=2\cdot\frac13=\frac23\)；\(S_2\) 取左端點 \(=f(0)+f(1)=\frac32>\frac23\)。`,
+  R`(b) 取左端點 \(0,\frac12,1,\frac32\)：\(S_4=\frac12\left(1+\frac23+\frac12+\frac25\right)=\frac{77}{60}\)。`,
+  R`(c) 黎曼和的極限就是 \(\int_0^2\frac{dx}{1+x}=\ln3\)，跟 \(c_k\) 怎麼選無關。`]},
+{id:'113s-7', src:'113暑', no:'7', pts:10, topic:'adv', hard:true,
+ q:R`(a) \(f\) 在 \([a,b]\) 一對一、\(f'\) 連續，證明 \(\displaystyle\int_a^bf(x)dx+\int_{f(a)}^{f(b)}f^{-1}(x)dx=bf(b)-af(a)\)。<br>(b) 求 \(\displaystyle\int_{11}^{30}\sqrt{\sqrt[3]{x-3}-2}\,dx\)。`,
+ a:R`(b) \(\dfrac{478}{35}\)`, hint:R`(a) 在第二個積分令 \(x=f(y)\)，再分部積分。(b) 原函數不好積，反函數是多項式。`,
+ steps:[R`(a) \(x=f(y)\)，\(dx=f'(y)dy\)，\(x:f(a)\to f(b)\) 對應 \(y:a\to b\)：\(\int_{f(a)}^{f(b)}f^{-1}(x)dx=\int_a^by\,f'(y)dy=\left[yf(y)\right]_a^b-\int_a^bf(y)dy\)，移項得證。`,
+  R`(b) \(f(x)=\sqrt{\sqrt[3]{x-3}-2}\)，\(f(11)=0\)，\(f(30)=1\)。反函數：\(x=(y^2+2)^3+3\)。`,
+  R`\(\int_0^1\left[(y^2+2)^3+3\right]dy=\int_0^1(y^6+6y^4+12y^2+11)dy=\frac17+\frac65+4+11=\frac{572}{35}\)。`,
+  R`\(\int_{11}^{30}f\,dx=30\cdot1-11\cdot0-\frac{572}{35}=\frac{478}{35}\)`]},
+
+/* ===================== 113上 ===================== */
+{id:'113a-1-1', src:'113上', no:'1(1)', pts:6, topic:'lhop',
+ q:R`\(\displaystyle\lim_{x\to0}\frac{x^2}{\ln(\cos2x)}\)`, a:R`\(-\dfrac12\)`, hint:R`\(\frac00\)，分母微分要用連鎖律。`,
+ steps:[R`分母微分：\(\frac{-2\sin2x}{\cos2x}=-2\tan2x\)。`, R`\(\dfrac{2x}{-2\tan2x}=-\dfrac{x}{\tan2x}\overset{L}{=}-\dfrac{1}{2\sec^22x}\to-\dfrac12\)`]},
+{id:'113a-1-2', src:'113上', no:'1(2)', pts:6, topic:'lhop',
+ q:R`\(\displaystyle\lim_{x\to0^+}\left(e^{2x}+2x\right)^{2/x}\)`, a:R`\(e^8\)`, hint:R`\(1^\infty\)，取 ln。`,
+ steps:[R`\(\ln L=\lim\dfrac{2\ln(e^{2x}+2x)}{x}\)，\(\frac00\)。`, R`\(\overset L=\lim\dfrac{2(2e^{2x}+2)}{e^{2x}+2x}=\dfrac{2\cdot4}{1}=8\)`, R`\(L=e^8\)`]},
+{id:'113a-1-3', src:'113上', no:'1(3)', pts:6, topic:'ftc',
+ q:R`\(\displaystyle\lim_{x\to0^+}\frac{\int_{\sqrt x}^0\sin(t^2)\,dt}{\sqrt{x^3}}\)`, a:R`\(-\dfrac13\)`, hint:R`上下限都要看清楚，先翻成 \(-\int_0^{\sqrt x}\)。`,
+ steps:[R`分子 \(=-\int_0^{\sqrt x}\sin t^2dt\to0\)，分母 \(\to0\)。`,
+  R`分子微分：\(-\sin\left((\sqrt x)^2\right)\cdot\frac1{2\sqrt x}=-\frac{\sin x}{2\sqrt x}\)；分母微分：\(\frac32x^{1/2}\)。`,
+  R`相除：\(-\dfrac{\sin x}{3x}\to-\dfrac13\)`]},
+{id:'113a-2-1', src:'113上', no:'2(1)', pts:8, topic:'trig', m:'三角積分',
+ q:R`\(\displaystyle\int\frac{\cos^5x}{\sin^2x}dx\)`, a:R`\(-\csc x-2\sin x+\dfrac{\sin^3x}3+C\)`, hint:R`cos 奇次，令 \(u=\sin x\)。`,
+ steps:[R`\(\cos^5x\,dx=(1-\sin^2x)^2\cos x\,dx\)，\(u=\sin x\)。`, R`\(\int\frac{(1-u^2)^2}{u^2}du=\int(u^{-2}-2+u^2)du=-\frac1u-2u+\frac{u^3}3\)`, R`\(-\csc x-2\sin x+\frac{\sin^3x}3+C\)`]},
+{id:'113a-2-2', src:'113上', no:'2(2)', pts:8, topic:'tsub', m:'三角代換',
+ q:R`\(\displaystyle\int\frac{x^2}{\sqrt{49-x^2}}dx\)`, a:R`\(\dfrac{49}{2}\sin^{-1}\dfrac x7-\dfrac x2\sqrt{49-x^2}+C\)`, hint:R`\(x=7\sin\theta\)。`,
+ steps:[R`\(x=7\sin\theta\)，\(dx=7\cos\theta\,d\theta\)，\(\sqrt{49-x^2}=7\cos\theta\)。`, R`\(\int49\sin^2\theta\,d\theta=\frac{49}2(\theta-\sin\theta\cos\theta)\)`,
+  R`畫三角形：\(\sin\theta=\frac x7\)，\(\cos\theta=\frac{\sqrt{49-x^2}}7\)。`, R`\(\frac{49}2\sin^{-1}\frac x7-\frac x2\sqrt{49-x^2}+C\)`]},
+{id:'113a-2-3', src:'113上', no:'2(3)', pts:8, topic:'pf', m:'部分分式',
+ q:R`\(\displaystyle\int\frac{2x^3+4}{(x-1)^2(x^2+1)}dx\)`, a:R`\(\ln(x^2+1)+\tan^{-1}x-\dfrac3{x-1}+C\)`, hint:R`設 \(\frac A{x-1}+\frac B{(x-1)^2}+\frac{Cx+D}{x^2+1}\)。`,
+ steps:[R`\(x=1\)：\(6=2B\)，\(B=3\)。`, R`比較係數：\(A+C=2\)，常數項 \(-A+B+D=4\) 等等，解出 \(A=0,\ C=2,\ D=1\)。`,
+  R`\(\int\left(\frac3{(x-1)^2}+\frac{2x+1}{x^2+1}\right)dx=-\frac3{x-1}+\ln(x^2+1)+\tan^{-1}x+C\)`]},
+{id:'113a-2-4', src:'113上', no:'2(4)', pts:8, topic:'pf', m:'代換＋部分分式',
+ q:R`\(\displaystyle\int\frac{\tan x(\sec^2x+4\sec x)}{\sec^2x+5\sec x-6}dx\)`, a:R`\(\dfrac27\ln|\sec x+6|+\dfrac57\ln|\sec x-1|+C\)`, hint:R`\(u=\sec x\)，\(\tan x\,dx=\frac{du}{u}\)。`,
+ steps:[R`\(du=\sec x\tan x\,dx\)，所以 \(\tan x\,dx=\frac{du}u\)。`, R`\(\int\frac{u^2+4u}{u(u^2+5u-6)}du=\int\frac{u+4}{(u+6)(u-1)}du\)`,
+  R`\(\frac{u+4}{(u+6)(u-1)}=\frac{2/7}{u+6}+\frac{5/7}{u-1}\)`, R`\(\frac27\ln|\sec x+6|+\frac57\ln|\sec x-1|+C\)`]},
+{id:'113a-2-5', src:'113上', no:'2(5)', pts:8, topic:'riemann', m:'對稱',
+ q:R`\(\displaystyle\int_{-1}^1\left(\sqrt{x^{10}}+x^2\sec x\tan x+\frac1{1+x^2}\right)dx\)`, a:R`\(\dfrac13+\dfrac\pi2\)`, hint:R`哪些是奇函數？\(\sqrt{x^{10}}=|x|^5\)。`,
+ steps:[R`\(x^2\sec x\tan x\) 是奇函數，積分 0。`, R`\(\sqrt{x^{10}}=|x|^5\)（不是 \(x^5\)），偶函數：\(2\int_0^1x^5dx=\frac13\)。`, R`\(\int_{-1}^1\frac{dx}{1+x^2}=\frac\pi4-(-\frac\pi4)=\frac\pi2\)`]},
+{id:'113a-3', src:'113上', no:'3', pts:10, topic:'vol',
+ q:R`半圓 \(y=\sqrt{4-x^2}\) 與 \(x\) 軸圍成的區域，繞 \(y=-1\) 旋轉，求體積。`, a:R`\(\dfrac{32\pi}3+4\pi^2\)`, hint:R`墊圈法，外半徑 \(\sqrt{4-x^2}+1\)，內半徑 1。`,
+ steps:[R`\(V=\pi\int_{-2}^2\left[(\sqrt{4-x^2}+1)^2-1^2\right]dx=\pi\int_{-2}^2\left(4-x^2+2\sqrt{4-x^2}\right)dx\)`,
+  R`\(\int_{-2}^2(4-x^2)dx=\frac{32}3\)；\(\int_{-2}^2\sqrt{4-x^2}dx\) 是半圓面積 \(2\pi\)。`, R`\(V=\pi\left(\frac{32}3+4\pi\right)=\frac{32\pi}3+4\pi^2\)`]},
+{id:'113a-4', src:'113上', no:'4', pts:12, topic:'vol',
+ q:R`\(D\) 由 \(y=-\sqrt x\)、\(x=y\)、\(y=-2\) 圍成。(1) 畫圖 (2) 繞 \(x\) 軸旋轉的體積。`, a:R`\(\dfrac{40\pi}3\)`, hint:R`頂點 \((0,0),(-2,-2),(4,-2)\)。用 \(y\) 切，圓柱殼法一次搞定。`,
+ steps:[R`交點：\(y=x\) 和 \(y=-\sqrt x\) 交在原點；\(y=-2\) 和兩條線分別交在 \((-2,-2)\)、\((4,-2)\)。`,
+  R`用 \(y\) 當變數，\(-2\le y\le0\)：左邊 \(x=y\)，右邊 \(x=y^2\)，殼的半徑 \(|y|=-y\)，高 \(y^2-y\)。`,
+  R`\(V=2\pi\int_{-2}^0(-y)(y^2-y)dy=2\pi\left[-\frac{y^4}4+\frac{y^3}3\right]_{-2}^0=2\pi\cdot\frac{20}3=\frac{40\pi}3\)`,
+  R`驗算：用墊圈法拆 \(x\in[-2,0]\) 和 \([0,4]\) 兩段，\(\frac{16\pi}3+8\pi\) 一樣等於 \(\frac{40\pi}3\)。`]},
+{id:'113a-5', src:'113上', no:'5', pts:10, topic:'arc',
+ q:R`\(x=2\sqrt{8-y}\)，\(0\le y\le5\)，繞 \(y\) 軸旋轉，求曲面面積。`, a:R`\(\dfrac{152\pi}3\)`, hint:R`繞 \(y\) 軸，以 \(y\) 為變數：\(S=2\pi\int x\sqrt{1+(dx/dy)^2}dy\)。`,
+ steps:[R`\(\frac{dx}{dy}=-\frac1{\sqrt{8-y}}\)，\(1+(x')^2=\frac{9-y}{8-y}\)。`, R`\(x\sqrt{1+(x')^2}=2\sqrt{8-y}\cdot\sqrt{\frac{9-y}{8-y}}=2\sqrt{9-y}\)`,
+  R`\(S=2\pi\int_0^52\sqrt{9-y}\,dy=4\pi\cdot\frac23\left[27-8\right]=\frac{152\pi}3\)`]},
+{id:'113a-6', src:'113上', no:'6', pts:10, topic:'imp',
+ q:R`(a) \(\int_0^1\ln x\,dx\)　(b) \(a>1\) 且 \(\int_0^a\ln x\,dx=0\)，求 \(a\)。`, a:R`(a) \(-1\)　(b) \(a=e\)`, hint:R`\(\int\ln x=x\ln x-x\)，下限要寫極限。`,
+ steps:[R`(a) \(\lim_{t\to0^+}\left[x\ln x-x\right]_t^1=-1-\lim(t\ln t-t)=-1-0=-1\)。`, R`(b) \(a\ln a-a=0\)，\(a\neq0\) 所以 \(\ln a=1\)，\(a=e\)。`,
+  R`\(\int_0^1\ln x\,dx=-1\) 在 110、112、113 都出現過，一定要會寫極限的過程。`]},
+{id:'113a-7', src:'113上', no:'7 加分', pts:5, topic:'riemann', hard:true,
+ q:R`\(\displaystyle\lim_{n\to\infty}\sum_{k=1}^n\left(\frac{7\cdot2^7k^6}{n^7}-\frac{4\cdot2^4k^3}{n^4}+\frac2n\right)\)`, a:R`\(114\)`, hint:R`每一項都提出 \(\frac2n\)，剩下的寫成 \(\frac{2k}n\) 的函數。`,
+ steps:[R`\(\frac{7\cdot2^7k^6}{n^7}=\frac2n\cdot7\left(\frac{2k}n\right)^6\)，\(\frac{4\cdot2^4k^3}{n^4}=\frac2n\cdot4\left(\frac{2k}n\right)^3\)，\(\frac2n=\frac2n\cdot1\)。`,
+  R`\(\Delta x=\frac2n\)，\(x_k=\frac{2k}n\)，區間 \([0,2]\)。`, R`\(\int_0^2(7x^6-4x^3+1)dx=128-16+2=114\)`]},
+
+/* ===================== 112上 ===================== */
+{id:'112-1', src:'112上', no:'1', pts:8, topic:'arc',
+ q:R`\(x=2\sqrt{4-y}\)，\(0\le y\le\frac{15}4\)，繞 \(y\) 軸，求曲面面積。`, a:R`\(\dfrac{35\sqrt5\,\pi}{3}\)`, hint:R`跟 113 上第 5 題同型。`,
+ steps:[R`\(x\sqrt{1+(x')^2}=2\sqrt{4-y}\sqrt{\frac{5-y}{4-y}}=2\sqrt{5-y}\)`, R`\(S=4\pi\int_0^{15/4}\sqrt{5-y}\,dy=\frac{8\pi}3\left[5^{3/2}-\left(\tfrac54\right)^{3/2}\right]\)`,
+  R`\(=\frac{8\pi}3\cdot\frac{35\sqrt5}8=\frac{35\sqrt5\,\pi}3\)`]},
+{id:'112-2a', src:'112上', no:'2(a)', pts:10, topic:'pf', m:'部分分式',
+ q:R`\(\displaystyle\int\frac{x^2}{x^4-1}dx\)`, a:R`\(\dfrac14\ln\left|\dfrac{x-1}{x+1}\right|+\dfrac12\tan^{-1}x+C\)`, hint:R`\(\frac{x^2}{(x^2-1)(x^2+1)}=\frac12\left(\frac1{x^2-1}+\frac1{x^2+1}\right)\)`,
+ steps:[R`把 \(x^2\) 當一個整體拆：\(\frac{x^2}{(x^2-1)(x^2+1)}=\frac12\cdot\frac1{x^2-1}+\frac12\cdot\frac1{x^2+1}\)。`,
+  R`\(\frac1{x^2-1}=\frac12\left(\frac1{x-1}-\frac1{x+1}\right)\)，積分 \(\frac12\ln\left|\frac{x-1}{x+1}\right|\)。`, R`答案 \(\frac14\ln\left|\frac{x-1}{x+1}\right|+\frac12\tan^{-1}x+C\)`]},
+{id:'112-2b', src:'112上', no:'2(b)', pts:10, topic:'parts', m:'代換＋分部',
+ q:R`\(\displaystyle\int_0^{\pi^2/4}\cos\sqrt x\,dx\)`, a:R`\(\pi-2\)`, hint:R`\(u=\sqrt x\)，\(dx=2u\,du\)。`,
+ steps:[R`\(u=\sqrt x\)：\(\int_0^{\pi/2}2u\cos u\,du\)。`, R`分部：\(2\left[u\sin u+\cos u\right]_0^{\pi/2}=2\left(\frac\pi2-1\right)=\pi-2\)`]},
+{id:'112-2c', src:'112上', no:'2(c)', pts:10, topic:'imp', m:'分部積分',
+ q:R`\(\displaystyle\int_0^e\ln x\,dx\)`, a:R`\(0\)`, hint:R`瑕積分，下限寫極限。`,
+ steps:[R`\(\left[x\ln x-x\right]_0^e=(e-e)-\lim_{t\to0^+}(t\ln t-t)=0-0=0\)`]},
+{id:'112-2d', src:'112上', no:'2(d)', pts:10, topic:'trig', m:'三角積分',
+ q:R`\(\displaystyle\int\sec^5x\,dx\)`, a:R`\(\frac14\sec^3x\tan x+\frac38\sec x\tan x+\frac38\ln|\sec x+\tan x|+C\)`, hint:R`分部積分，\(u=\sec^3x\)，\(dv=\sec^2x\,dx\)，會繞回來。`,
+ steps:[R`\(\int\sec^5=\sec^3x\tan x-\int3\sec^3x\tan^2x\,dx=\sec^3x\tan x-3\int\sec^5+3\int\sec^3\)`,
+  R`移項：\(4\int\sec^5=\sec^3x\tan x+3\int\sec^3x\,dx\)。`, R`\(\int\sec^3x\,dx=\frac12(\sec x\tan x+\ln|\sec x+\tan x|)\)，代進去整理。`,
+  R`\(\frac14\sec^3x\tan x+\frac38\sec x\tan x+\frac38\ln|\sec x+\tan x|+C\)`]},
+{id:'112-2e', src:'112上', no:'2(e)', pts:10, topic:'tsub', m:'三角代換',
+ q:R`\(\displaystyle\int\frac{(1-y^2)^{5/2}}{y^8}dy\)`, a:R`\(-\dfrac{(1-y^2)^{7/2}}{7y^7}+C\)`, hint:R`\(y=\sin\theta\)，會變成 \(\cot^6\theta\csc^2\theta\)。`,
+ steps:[R`\(y=\sin\theta\)，\(dy=\cos\theta\,d\theta\)：\(\int\frac{\cos^6\theta}{\sin^8\theta}d\theta=\int\cot^6\theta\csc^2\theta\,d\theta\)。`,
+  R`令 \(u=\cot\theta\)：\(-\frac{\cot^7\theta}7\)。`, R`\(\cot\theta=\frac{\sqrt{1-y^2}}y\)，答案 \(-\frac{(1-y^2)^{7/2}}{7y^7}+C\)`]},
+{id:'112-3', src:'112上', no:'3', pts:8, topic:'vol',
+ q:R`\(\mathcal R\) 由 \(x^3-x+y=0\)、\(y=0\)、\(x=0\)、\(x=1\) 圍成，用圓柱殼法繞 \(y\) 軸，求體積。`, a:R`\(\dfrac{4\pi}{15}\)`, hint:R`\(y=x-x^3\)，在 \([0,1]\) 上非負。`,
+ steps:[R`\(V=2\pi\int_0^1x(x-x^3)dx=2\pi\left(\frac13-\frac15\right)=\frac{4\pi}{15}\)`]},
+{id:'112-4', src:'112上', no:'4', pts:10, topic:'ftc',
+ q:R`\(F(x)=\int_{x^2}^0\tan^{-1}t\,dt\)。(a) 遞增遞減區間 (b) \(\displaystyle\lim_{x\to-\infty}\frac{F(x)}{x^2}\)`, a:R`(a) 遞增 \((-\infty,0)\)，遞減 \((0,\infty)\)　(b) \(-\dfrac\pi2\)`, hint:R`\(F'(x)=-2x\tan^{-1}(x^2)\)。`,
+ steps:[R`\(F(x)=-\int_0^{x^2}\tan^{-1}t\,dt\)，\(F'(x)=-\tan^{-1}(x^2)\cdot2x\)。`, R`\(\tan^{-1}(x^2)>0\)（\(x\neq0\)），所以 \(x<0\) 時 \(F'>0\) 遞增，\(x>0\) 時遞減。`,
+  R`(b) \(F\to-\infty\)，\(\frac{\infty}{\infty}\) 型。\(\dfrac{F'(x)}{2x}=-\tan^{-1}(x^2)\to-\dfrac\pi2\)`]},
+{id:'112-5', src:'112上', no:'5', pts:8, topic:'riemann',
+ q:R`求 \(g(x)=\frac1{e^x+e^{-x}}\) 在 \([-\ln3,0]\) 的平均值。`, a:R`\(\dfrac{\pi/4-\tan^{-1}(1/3)}{\ln3}=\dfrac{\tan^{-1}(1/2)}{\ln3}\)`, hint:R`上下同乘 \(e^x\)，\(u=e^x\)。`,
+ steps:[R`\(\frac1{e^x+e^{-x}}=\frac{e^x}{e^{2x}+1}\)，積分 \(\tan^{-1}(e^x)\)。`, R`\(\int_{-\ln3}^0=\tan^{-1}1-\tan^{-1}\frac13=\frac\pi4-\tan^{-1}\frac13\)`,
+  R`除以區間長 \(\ln3\)。也可以用正切差角化成 \(\tan^{-1}\frac12\)。`]},
+{id:'112-6', src:'112上', no:'6', pts:16, topic:'vol',
+ q:R`\(\Omega\) 由 \(y=x^2\) 和 \(y=x+2\) 圍成。(a) 面積 (b) 用墊圈法繞 \(x\) 軸的體積。`, a:R`(a) \(\dfrac92\)　(b) \(\dfrac{72\pi}5\)`, hint:R`交點 \(x=-1,2\)。`,
+ steps:[R`(a) \(\int_{-1}^2(x+2-x^2)dx=\frac92\)`, R`(b) 外半徑 \(x+2\)，內半徑 \(x^2\)：\(\pi\int_{-1}^2\left[(x+2)^2-x^4\right]dx=\pi\left(21-\frac{33}5\right)=\frac{72\pi}5\)`]},
+
+/* ===================== 111上 ===================== */
+{id:'111-1-1', src:'111上', no:'1(1)', pts:8, topic:'sub', m:'代換',
+ q:R`\(\displaystyle\int\frac{\ln(\ln x)}{x\ln x}dx\)`, a:R`\(\dfrac12\left(\ln(\ln x)\right)^2+C\)`, hint:R`\(u=\ln(\ln x)\)。`,
+ steps:[R`\(u=\ln(\ln x)\)，\(du=\frac{1}{\ln x}\cdot\frac1xdx\)。`, R`\(\int u\,du=\frac{u^2}2+C\)`]},
+{id:'111-1-2', src:'111上', no:'1(2)', pts:8, topic:'imp', m:'分部積分',
+ q:R`\(\displaystyle\int_0^1x\ln x\,dx\)`, a:R`\(-\dfrac14\)`, hint:R`同 113 暑第 3 題。`,
+ steps:[R`\(\left[\frac{x^2}2\ln x-\frac{x^2}4\right]_0^1=-\frac14-0\)（下限用 \(x^2\ln x\to0\)）`]},
+{id:'111-1-3', src:'111上', no:'1(3)', pts:8, topic:'pf', m:'部分分式',
+ q:R`\(\displaystyle\int\frac{x^3}{x^2+2x+1}dx\)`, a:R`\(\frac{x^2}2-2x+3\ln|x+1|+\frac1{x+1}+C\)`, hint:R`先長除，分母是 \((x+1)^2\)。`,
+ steps:[R`\(x^3=(x+1)^2(x-2)+(3x+2)\)`, R`\(\frac{3x+2}{(x+1)^2}=\frac3{x+1}-\frac1{(x+1)^2}\)`, R`\(\frac{x^2}2-2x+3\ln|x+1|+\frac1{x+1}+C\)`]},
+{id:'111-1-4', src:'111上', no:'1(4)', pts:8, topic:'tsub', m:'代換',
+ q:R`\(\displaystyle\int\frac{x}{\sqrt{1+x^4}}dx\)`, a:R`\(\dfrac12\ln\left(x^2+\sqrt{1+x^4}\right)+C\)`, hint:R`\(u=x^2\)。`,
+ steps:[R`\(u=x^2\)：\(\frac12\int\frac{du}{\sqrt{1+u^2}}=\frac12\ln(u+\sqrt{1+u^2})\)`]},
+{id:'111-1-5', src:'111上', no:'1(5)', pts:7, topic:'trig', m:'三角積分',
+ q:R`\(\displaystyle\int\sqrt{\sin x}\cos^3x\,dx\)`, a:R`\(\frac23\sin^{3/2}x-\frac27\sin^{7/2}x+C\)`, hint:R`cos 奇次，\(u=\sin x\)。`,
+ steps:[R`\(\int u^{1/2}(1-u^2)du=\frac23u^{3/2}-\frac27u^{7/2}\)`]},
+{id:'111-1-6', src:'111上', no:'1(6)', pts:7, topic:'parts', m:'分部積分', hard:true,
+ q:R`\(\displaystyle\int\frac{xe^{2x}}{(2x+1)^2}dx\)`, a:R`\(\dfrac{e^{2x}}{4(2x+1)}+C\)`, hint:R`\(u=xe^{2x}\)，\(dv=\frac{dx}{(2x+1)^2}\)。`,
+ steps:[R`\(du=e^{2x}(2x+1)dx\)，\(v=-\frac1{2(2x+1)}\)。`, R`\(-\frac{xe^{2x}}{2(2x+1)}+\int\frac{e^{2x}}2dx=-\frac{xe^{2x}}{2(2x+1)}+\frac{e^{2x}}4\)`, R`通分：\(\frac{e^{2x}}{4(2x+1)}+C\)`]},
+{id:'111-1-7', src:'111上', no:'1(7)', pts:7, topic:'pf', m:'代換＋部分分式',
+ q:R`\(\displaystyle\int\frac{\sec^2\theta}{\tan^3\theta-\tan^2\theta}d\theta\)`, a:R`\(\ln\left|\dfrac{\tan\theta-1}{\tan\theta}\right|+\cot\theta+C\)`, hint:R`\(u=\tan\theta\)。`,
+ steps:[R`\(\int\frac{du}{u^2(u-1)}\)，\(\frac1{u^2(u-1)}=-\frac1u-\frac1{u^2}+\frac1{u-1}\)。`, R`\(-\ln|u|+\frac1u+\ln|u-1|\)，換回 \(\tan\theta\)。`]},
+{id:'111-1-8', src:'111上', no:'1(8)', pts:7, topic:'imp', m:'代換',
+ q:R`\(\displaystyle\int_{-\infty}^1\frac{9r^2}{\sqrt{1-r^3}}dr\)`, a:R`發散`, hint:R`\(w=1-r^3\)。`,
+ steps:[R`反導數 \(-6\sqrt{1-r^3}\)。`, R`\(\lim_{b\to-\infty}\left[-6\sqrt{1-r^3}\right]_b^1=0+\lim6\sqrt{1-b^3}=\infty\)，發散。`]},
+{id:'111-2', src:'111上', no:'2', pts:8, topic:'vol',
+ q:R`\(y=x^2\) 與 \(y=x+2\) 圍成的區域繞 \(x=2\) 旋轉，求體積。`, a:R`\(\dfrac{27\pi}2\)`, hint:R`繞直立線、用 \(x\) 切：圓柱殼法，半徑 \(2-x\)。`,
+ steps:[R`\(V=2\pi\int_{-1}^2(2-x)(x+2-x^2)dx=2\pi\int_{-1}^2(x^3-3x^2+4)dx\)`, R`\(=2\pi\cdot\frac{27}4=\frac{27\pi}2\)`]},
+{id:'111-3', src:'111上', no:'3', pts:10, topic:'tsub',
+ q:R`解初值問題 \(\sqrt{x^2-9}\dfrac{dy}{dx}=1\)，\(x>3\)，\(y(5)=\ln3\)。`, a:R`\(y=\ln\left(\dfrac{x+\sqrt{x^2-9}}3\right)\)`, hint:R`\(y=\int\frac{dx}{\sqrt{x^2-9}}\)，用 \(x=3\sec\theta\)。`,
+ steps:[R`\(\int\frac{dx}{\sqrt{x^2-9}}=\ln|x+\sqrt{x^2-9}|+C\)`, R`\(y(5)=\ln9+C=\ln3\)，\(C=-\ln3\)。`]},
+{id:'111-4', src:'111上', no:'4', pts:10, topic:'sub',
+ q:R`\(f(x)=\frac1{1+e^{-x}}\)。(1) 求所有反導數 (2) 證明 \(f\) 滿足 \(\frac{dy}{dx}=y(1-y)\)，\(y(0)=\frac12\)。`, a:R`(1) \(\ln(1+e^x)+C\)`, hint:R`上下同乘 \(e^x\)。`,
+ steps:[R`(1) \(\frac{e^x}{e^x+1}\)，積分 \(\ln(1+e^x)+C\)。`, R`(2) \(f'=\frac{e^{-x}}{(1+e^{-x})^2}=\frac1{1+e^{-x}}\cdot\frac{e^{-x}}{1+e^{-x}}=y(1-y)\)，\(f(0)=\frac12\)。`]},
+{id:'111-5', src:'111上', no:'5', pts:20, topic:'ftc',
+ q:R`\(F(x)=\frac2{\sqrt\pi}\int_0^xe^{-t^2}dt\)。(1) 連續嗎 (2) 有水平切線嗎 (3) 有反曲點嗎 (4) 有水平漸近線嗎`, a:R`(1) 是 (2) 沒有 (3) 有，在 \((0,0)\) (4) 有`, hint:R`\(F'=\frac2{\sqrt\pi}e^{-x^2}\)。`,
+ steps:[R`(1) 由基本定理 \(F\) 可微，所以連續。`, R`(2) \(F'(x)=\frac2{\sqrt\pi}e^{-x^2}>0\) 永遠不為 0，沒有水平切線。`,
+  R`(3) \(F''=-\frac{4x}{\sqrt\pi}e^{-x^2}\)，在 \(x=0\) 變號，反曲點 \((0,0)\)。`,
+  R`(4) \(t\ge1\) 時 \(0<e^{-t^2}\le e^{-t}\)，\(\int_1^\infty e^{-t}dt\) 收斂，所以 \(\lim_{x\to\infty}F\) 存在；\(F\) 是奇函數，\(x\to-\infty\) 也有。兩條水平漸近線。`]},
+
+/* ===================== 110 ===================== */
+{id:'110-1-1', src:'110', no:'1(1)', pts:8, topic:'basic', m:'基本公式',
+ q:R`\(\displaystyle\int_1^4\left(\frac2{x^3}-\sqrt x\right)dx\)`, a:R`\(-\dfrac{179}{48}\)`, hint:R`冪次公式。`,
+ steps:[R`\(\left[-\frac1{x^2}-\frac23x^{3/2}\right]_1^4=\left(-\frac1{16}-\frac{16}3\right)-\left(-1-\frac23\right)=-\frac{179}{48}\)`]},
+{id:'110-1-2', src:'110', no:'1(2)', pts:8, topic:'sub', m:'代換',
+ q:R`\(\displaystyle\int x^2\sqrt{x+1}\,dx\)`, a:R`\(\frac27(x+1)^{7/2}-\frac45(x+1)^{5/2}+\frac23(x+1)^{3/2}+C\)`, hint:R`\(u=x+1\)，\(x=u-1\)。`,
+ steps:[R`\(\int(u-1)^2u^{1/2}du=\int(u^{5/2}-2u^{3/2}+u^{1/2})du\)`, R`\(\frac27u^{7/2}-\frac45u^{5/2}+\frac23u^{3/2}+C\)`]},
+{id:'110-1-3', src:'110', no:'1(3)', pts:8, topic:'sub', m:'代換',
+ q:R`\(\displaystyle\int_0^3\frac{x}{\sqrt{x+1}}dx\)`, a:R`\(\dfrac83\)`, hint:R`\(u=x+1\)，上下限 1 到 4。`,
+ steps:[R`\(\int_1^4\frac{u-1}{\sqrt u}du=\left[\frac23u^{3/2}-2u^{1/2}\right]_1^4=\frac43+\frac43=\frac83\)`]},
+{id:'110-1-4', src:'110', no:'1(4)', pts:8, topic:'parts', m:'代換＋分部',
+ q:R`\(\displaystyle\int\cos\sqrt x\,dx\)`, a:R`\(2\sqrt x\sin\sqrt x+2\cos\sqrt x+C\)`, hint:R`\(u=\sqrt x\)。`,
+ steps:[R`\(\int2u\cos u\,du=2(u\sin u+\cos u)+C\)`]},
+{id:'110-1-5', src:'110', no:'1(5)', pts:8, topic:'parts', m:'分部積分',
+ q:R`\(\displaystyle\int e^x\cos2x\,dx\)`, a:R`\(\dfrac{e^x(\cos2x+2\sin2x)}5+C\)`, hint:R`分部兩次，繞回原積分後移項。`,
+ steps:[R`\(I=e^x\cos2x+2\int e^x\sin2x\,dx\)`, R`\(\int e^x\sin2x=e^x\sin2x-2I\)`, R`\(I=e^x\cos2x+2e^x\sin2x-4I\)，\(5I=e^x(\cos2x+2\sin2x)\)`]},
+{id:'110-1-6', src:'110', no:'1(6)', pts:8, topic:'pf', m:'部分分式',
+ q:R`\(\displaystyle\int\frac{2}{16x^2-1}dx\)`, a:R`\(\dfrac14\ln\left|\dfrac{4x-1}{4x+1}\right|+C\)`, hint:R`\(16x^2-1=(4x-1)(4x+1)\)。`,
+ steps:[R`\(\frac2{(4x-1)(4x+1)}=\frac1{4x-1}-\frac1{4x+1}\)`, R`\(\frac14\ln|4x-1|-\frac14\ln|4x+1|+C\)，別漏了 \(\frac14\)。`]},
+{id:'110-1-7', src:'110', no:'1(7)', pts:8, topic:'tsub', m:'三角代換',
+ q:R`\(\displaystyle\int\sqrt{9-x^2}\,dx\)`, a:R`\(\dfrac x2\sqrt{9-x^2}+\dfrac92\sin^{-1}\dfrac x3+C\)`, hint:R`\(x=3\sin\theta\)。`,
+ steps:[R`\(\int9\cos^2\theta\,d\theta=\frac92(\theta+\sin\theta\cos\theta)\)`, R`換回：\(\frac92\sin^{-1}\frac x3+\frac x2\sqrt{9-x^2}+C\)`]},
+{id:'110-1-8', src:'110', no:'1(8)', pts:8, topic:'tsub', m:'配方',
+ q:R`\(\displaystyle\int_4^6\frac{1}{\sqrt{8x-x^2}}dx\)`, a:R`\(\dfrac\pi6\)`, hint:R`配方 \(16-(x-4)^2\)。`,
+ steps:[R`\(\left[\sin^{-1}\frac{x-4}4\right]_4^6=\sin^{-1}\frac12=\frac\pi6\)`]},
+{id:'110-2', src:'110', no:'2', pts:10, topic:'lhop',
+ q:R`(1) \(\displaystyle\lim_{x\to0^+}x\ln x\)　(2) \(\displaystyle\lim_{x\to1}\frac{\cos(\pi x-\frac\pi2)}{x-1}\)`, a:R`(1) \(0\)　(2) \(-\pi\)`, hint:R`(1) 寫成 \(\frac{\ln x}{1/x}\)。`,
+ steps:[R`(1) \(\frac{1/x}{-1/x^2}=-x\to0\)`, R`(2) \(\frac{-\pi\sin(\pi x-\frac\pi2)}{1}\to-\pi\sin\frac\pi2=-\pi\)`]},
+{id:'110-3', src:'110', no:'3', pts:8, topic:'vol',
+ q:R`\(y=2-x^2\)、\(x=0\)、\(x=1\)、\(y=0\) 圍成的區域繞 \(y\) 軸旋轉的體積。`, a:R`\(\dfrac{3\pi}2\)`, hint:R`圓柱殼法。`,
+ steps:[R`\(2\pi\int_0^1x(2-x^2)dx=2\pi\left(1-\frac14\right)=\frac{3\pi}2\)`]},
+{id:'110-4', src:'110', no:'4', pts:8, topic:'arc',
+ q:R`曲線 \(y^2=\frac49(x+1)^3\) 由 \(x=2\) 到 \(x=7\) 的弧長。`, a:R`\(\dfrac{38}3\)`, hint:R`取上半 \(y=\frac23(x+1)^{3/2}\)。`,
+ steps:[R`\(y'=(x+1)^{1/2}\)，\(1+(y')^2=x+2\)。`, R`\(\int_2^7\sqrt{x+2}\,dx=\frac23(27-8)=\frac{38}3\)`]},
+{id:'110-5', src:'110', no:'5', pts:10, topic:'imp',
+ q:R`(1) \(\displaystyle\int_0^\infty xe^{-2x}dx\)　(2) \(\displaystyle\int_0^1\ln x\,dx\)`, a:R`(1) \(\dfrac14\)　(2) \(-1\)`, hint:R`分部積分後寫極限。`,
+ steps:[R`(1) 反導數 \(-\frac x2e^{-2x}-\frac14e^{-2x}\)，\(b\to\infty\) 時 \(be^{-2b}\to0\)（羅必達），結果 \(0-(-\frac14)=\frac14\)。`, R`(2) 見 113 上第 6 題，\(-1\)。`]},
+{id:'110-6', src:'110', no:'6 加分', pts:5, topic:'sub', hard:true,
+ q:R`證明 \(\displaystyle\int_0^{\pi/2}\sin^nx\,dx=\int_0^{\pi/2}\cos^nx\,dx\)。`, a:R`令 \(x=\frac\pi2-u\)`, hint:R`\(\sin(\frac\pi2-u)=\cos u\)。`,
+ steps:[R`令 \(x=\frac\pi2-u\)，\(dx=-du\)，\(x:0\to\frac\pi2\) 變 \(u:\frac\pi2\to0\)。`, R`\(\int_{\pi/2}^0\cos^nu\,(-du)=\int_0^{\pi/2}\cos^nu\,du\)，得證。`]},
+
+/* ===================== 109上 ===================== */
+{id:'109-1-1', src:'109上', no:'1(1)', pts:8, topic:'tsub', m:'三角代換',
+ q:R`\(\displaystyle\int\sqrt{16-4x^2}\,dx\)`, a:R`\(x\sqrt{4-x^2}+4\sin^{-1}\dfrac x2+C\)`, hint:R`先提 2：\(2\sqrt{4-x^2}\)。`,
+ steps:[R`\(2\int\sqrt{4-x^2}dx=2\left(\frac x2\sqrt{4-x^2}+2\sin^{-1}\frac x2\right)+C\)`]},
+{id:'109-1-2', src:'109上', no:'1(2)', pts:8, topic:'imp', m:'代換',
+ q:R`\(\displaystyle\int_1^\infty\frac1{x(\ln x)^3}dx\)`, a:R`發散`, hint:R`下限 \(x=1\) 時 \(\ln x=0\)，兩端都是瑕點。`,
+ steps:[R`\(u=\ln x\)：\(\int_0^\infty u^{-3}du\)。`, R`在 \(u=0\) 附近 \(\int_0^1u^{-3}du\)，\(p=3\ge1\)，發散，整個就發散。`,
+  R`很多人只看到上限是 \(\infty\) 就算出一個數字，這是陷阱。`]},
+{id:'109-1-3', src:'109上', no:'1(3)', pts:8, topic:'parts', m:'分部積分',
+ q:R`\(\displaystyle\int x^4\cos(2x)\,dx\)`, a:R`\(\frac{x^4}2\sin2x+x^3\cos2x-\frac32x^2\sin2x-\frac32x\cos2x+\frac34\sin2x+C\)`, hint:R`表格法。`,
+ steps:[R`左：\(x^4,4x^3,12x^2,24x,24,0\)；右：\(\cos2x,\frac12\sin2x,-\frac14\cos2x,-\frac18\sin2x,\frac1{16}\cos2x,\frac1{32}\sin2x\)。`, R`正負交替相乘再整理。`]},
+{id:'109-1-4', src:'109上', no:'1(4)', pts:8, topic:'trig', m:'積化和差',
+ q:R`\(\displaystyle\int\sin7x\cos3x\,dx\)`, a:R`\(-\dfrac{\cos10x}{20}-\dfrac{\cos4x}8+C\)`, hint:R`\(\sin A\cos B=\frac12[\sin(A+B)+\sin(A-B)]\)`,
+ steps:[R`\(\frac12\int(\sin10x+\sin4x)dx=-\frac{\cos10x}{20}-\frac{\cos4x}8+C\)`]},
+{id:'109-1-5', src:'109上', no:'1(5)', pts:8, topic:'tsub', m:'三角代換',
+ q:R`\(\displaystyle\int\frac{\sqrt{x^2+3}}{x}dx\)`, a:R`\(\sqrt{x^2+3}-\sqrt3\ln\left|\dfrac{\sqrt3+\sqrt{x^2+3}}{x}\right|+C\)`, hint:R`令 \(u=\sqrt{x^2+3}\) 比三角代換快。`,
+ steps:[R`\(u=\sqrt{x^2+3}\)，\(u\,du=x\,dx\)：\(\int\frac{u}{x}\cdot\frac{u\,du}{x}=\int\frac{u^2}{u^2-3}du\)。`, R`\(=\int\left(1+\frac3{u^2-3}\right)du=u+\frac{\sqrt3}2\ln\left|\frac{u-\sqrt3}{u+\sqrt3}\right|\)`,
+  R`化簡後就是答案的形式（兩種寫法等價）。`]},
+{id:'109-1-6', src:'109上', no:'1(6)', pts:8, topic:'trig', m:'三角積分',
+ q:R`\(\displaystyle\int\sec(2x)\tan^2(2x)\,dx\)`, a:R`\(\frac14\sec2x\tan2x-\frac14\ln|\sec2x+\tan2x|+C\)`, hint:R`\(\tan^2=\sec^2-1\)，變成 \(\sec^3-\sec\)。`,
+ steps:[R`\(\int(\sec^32x-\sec2x)dx\)，令 \(u=2x\)。`, R`\(\frac12\left[\frac12(\sec u\tan u+\ln|\sec u+\tan u|)-\ln|\sec u+\tan u|\right]\)`]},
+{id:'109-1-7', src:'109上', no:'1(7)', pts:8, topic:'tsub', m:'代換＋三角代換', hard:true,
+ q:R`\(\displaystyle\int_0^{\pi/2}\frac{\cos\theta}{(\sin^2\theta+4\cos^2\theta)^{3/2}}d\theta\)`, a:R`\(\dfrac14\)`, hint:R`\(\sin^2\theta+4\cos^2\theta=4-3\sin^2\theta\)，令 \(u=\sin\theta\)。`,
+ steps:[R`\(\int_0^1\frac{du}{(4-3u^2)^{3/2}}\)，令 \(u=\frac2{\sqrt3}\sin\phi\)。`, R`反導數是 \(\frac{u}{4\sqrt{4-3u^2}}\)，代 \(u=1\)：\(\frac14\)。`]},
+{id:'109-1-8', src:'109上', no:'1(8)', pts:8, topic:'pf', m:'部分分式',
+ q:R`\(\displaystyle\int\frac{5x^2+20x+6}{x^3+2x^2+x}dx\)`, a:R`\(6\ln|x|-\ln|x+1|-\dfrac9{x+1}+C\)`, hint:R`分母 \(x(x+1)^2\)。`,
+ steps:[R`\(\frac Ax+\frac B{x+1}+\frac C{(x+1)^2}\)：\(x=0\) 得 \(A=6\)；\(x=-1\) 得 \(C=9\)；\(x^2\) 係數 \(A+B=5\)，\(B=-1\)。`, R`\(6\ln|x|-\ln|x+1|-\frac9{x+1}+C\)`]},
+{id:'109-2', src:'109上', no:'2', pts:12, topic:'lhop',
+ q:R`(1) \(\displaystyle\lim_{x\to0^+}\frac{e^x-1-x}{x^2}\)　(2) \(\displaystyle\lim_{x\to0^+}(\sin2x)^{3x}\)`, a:R`(1) \(\dfrac12\)　(2) \(1\)`, hint:R`(2) 是 \(0^0\)，取 ln。`,
+ steps:[R`(1) 兩次羅必達：\(\frac{e^x-1}{2x}\to\frac{e^x}2\to\frac12\)。`, R`(2) \(\ln L=\lim\frac{3\ln\sin2x}{1/x}\overset L=\lim\frac{6\cot2x}{-1/x^2}=\lim\left(-\frac{6x^2\cos2x}{\sin2x}\right)=0\)，\(L=e^0=1\)。`]},
+{id:'109-3', src:'109上', no:'3', pts:8, topic:'arc',
+ q:R`\(y=\frac12(e^x+e^{-x})\)，\(0\le x\le2\) 的弧長。`, a:R`\(\dfrac{e^2-e^{-2}}2\)`, hint:R`\(1+(y')^2\) 是完全平方。`,
+ steps:[R`\(y'=\frac{e^x-e^{-x}}2\)，\(1+(y')^2=\left(\frac{e^x+e^{-x}}2\right)^2\)。`, R`\(\int_0^2\frac{e^x+e^{-x}}2dx=\frac{e^2-e^{-2}}2\)`]},
+{id:'109-4', src:'109上', no:'4', pts:16, topic:'vol',
+ q:R`\(D\) 由 \(y=x^2+1\)、\(x=0\)、\(y=x\)、\(x=1\) 圍成。(1) 繞 \(y\) 軸 (2) 繞 \(y=-1\)，求體積。`, a:R`(1) \(\dfrac{5\pi}6\)　(2) \(\dfrac{16\pi}5\)`, hint:R`(1) 殼法 (2) 墊圈法，半徑要加 1。`,
+ steps:[R`(1) \(2\pi\int_0^1x(x^2+1-x)dx=2\pi\cdot\frac5{12}=\frac{5\pi}6\)`, R`(2) 外半徑 \(x^2+1-(-1)=x^2+2\)，內半徑 \(x+1\)：\(\pi\int_0^1\left[(x^2+2)^2-(x+1)^2\right]dx=\frac{16\pi}5\)`]}
+];
+
+/* 觀念單元：依考古題出現的頻率排序 */
+const UNITS = [
+{key:'lhop', title:'羅必達法則', sec:'4.5', freq:'8 份裡 7 份有，每次 10 到 18 分',
+ core:[
+  R`只有代進去是 \(\frac00\) 或 \(\frac\infty\infty\) 才能用。分子分母<b>各自</b>微分，不是用商的微分。`,
+  R`每用一次之前，都要先代入檢查還是不是 \(\frac00\) 或 \(\frac\infty\infty\)。114 暑的是非題就是在考這個。`,
+  R`其他不定型先轉換：<br>\(0\cdot\infty\)：把其中一個翻到分母，例如 \(x\ln x=\frac{\ln x}{1/x}\)。<br>\(\infty-\infty\)：通分。<br>\(1^\infty,\ 0^0,\ \infty^0\)：令 \(L\) 為極限，先算 \(\ln L\)，最後答案是 \(e^{\ln L}\)。`,
+  R`分子是變限積分的（例如 \(\int_0^{x^2}\cdots dt\)），微分時用微積分基本定理，別忘了乘上上限的導數。`
+ ],
+ formulas:[R`\lim_{x\to\infty}\left(1+\frac ax\right)^{bx}=e^{ab}`, R`\lim_{x\to0^+}x^p\ln x=0\quad(p>0)`, R`\lim_{x\to0}\frac{x-\sin x}{x^3}=\frac16`, R`\lim_{x\to0}\frac{1-\cos x}{x^2}=\frac12`],
+ traps:[R`取 ln 之後算出 8，忘了答案是 \(e^8\)。`, R`不是不定型也硬微分。`, R`\(\infty-\infty\) 沒通分就直接微。`]},
+
+{key:'basic', title:'反導數與基本積分公式', sec:'4.8、5.5、7.1', freq:'每一題積分最後都會用到',
+ core:[
+  R`不定積分一定要加 \(+C\)，考試漏掉會被扣。`,
+  R`下面這些要熟到看到就能寫，考試時間只有 110 分鐘，基本公式不能還在推。`
+ ],
+ formulas:[
+  R`\int x^n dx=\frac{x^{n+1}}{n+1}+C\ (n\ne-1)`, R`\int\frac1x dx=\ln|x|+C`,
+  R`\int\tan x\,dx=\ln|\sec x|+C`, R`\int\cot x\,dx=\ln|\sin x|+C`,
+  R`\int\sec x\,dx=\ln|\sec x+\tan x|+C`,
+  R`\int\csc x\,dx=-\ln|\csc x+\cot x|+C`,
+  R`\int\sec^3x\,dx=\tfrac12\left(\sec x\tan x+\ln|\sec x+\tan x|\right)+C`,
+  R`\int\frac{dx}{a^2+x^2}=\frac1a\tan^{-1}\frac xa+C`,
+  R`\int\frac{dx}{\sqrt{a^2-x^2}}=\sin^{-1}\frac xa+C`,
+  R`\int\frac{dx}{\sqrt{x^2+a^2}}=\ln\left(x+\sqrt{x^2+a^2}\right)+C`,
+  R`\int\frac{dx}{x^2-a^2}=\frac1{2a}\ln\left|\frac{x-a}{x+a}\right|+C`
+ ],
+ traps:[R`\(\int\frac{1}{4x-1}dx=\frac14\ln|4x-1|\)，係數 \(\frac14\) 很容易漏。`]},
+
+{key:'ftc', title:'微積分基本定理與變限積分', sec:'5.4', freq:'近幾年幾乎每份都有一題',
+ core:[
+  R`第一部分：\(\dfrac{d}{dx}\displaystyle\int_a^{g(x)}f(t)\,dt=f(g(x))\cdot g'(x)\)。上下限都是函數時：\(f(g(x))g'(x)-f(h(x))h'(x)\)。`,
+  R`第二部分：\(\int_a^bf(x)dx=F(b)-F(a)\)。`,
+  R`常見考法：求 \(F\) 的遞增遞減（看 \(F'\) 正負）、搭配羅必達算極限、題目給 \(\int_0^{x^3}f(\ldots)dt=\ln x\) 要你反推 \(f\) 的值（兩邊微分）。`
+ ],
+ formulas:[R`\frac{d}{dx}\int_0^1 f(x)\,dx=0\quad(\text{定積分是常數})`],
+ traps:[R`\(\int_{x^2}^0\) 的變數在下限，要先加負號翻過來。`, R`忘了乘 \(g'(x)\)。`]},
+
+{key:'riemann', title:'黎曼和、定積分性質、平均值', sec:'5.1 到 5.3', freq:'加分題常客，平均值常考',
+ core:[
+  R`看到 \(\lim\sum\) 就想成 \(\int\)：把 \(\frac{b-a}n\) 當 \(dx\)，把 \(a+\frac{(b-a)k}{n}\) 當 \(x\)。最常見是 \(\frac{2}{n}\)、\(\frac{2k}{n}\) 這種配對，區間 \([0,2]\)。`,
+  R`對稱區間 \([-a,a]\)：奇函數積分是 0，偶函數是 \(2\int_0^a\)。考題很愛塞一個奇函數讓你直接消掉。`,
+  R`平均值 \(=\dfrac{1}{b-a}\displaystyle\int_a^bf(x)dx\)。積分均值定理：連續函數一定有某個 \(c\) 讓 \(f(c)\) 等於平均值。`,
+  R`有絕對值的，在絕對值裡面等於 0 的點拆區間。`
+ ],
+ formulas:[R`\lim_{n\to\infty}\sum_{k=1}^n f\!\left(a+\tfrac{(b-a)k}{n}\right)\frac{b-a}{n}=\int_a^b f(x)\,dx`, R`\sqrt{x^{10}}=|x|^5`],
+ traps:[R`平均值忘了除以區間長度。`, R`\(\sqrt{x^{10}}\) 寫成 \(x^5\) 然後以為是奇函數。`]},
+
+{key:'sub', title:'變數變換', sec:'5.5、5.6', freq:'所有積分技巧的地基',
+ core:[
+  R`找「某個函數和它的導數同時出現」，令 \(u\) 等於那個函數。`,
+  R`定積分換元時，上下限跟著換成 \(u\) 的值，就不用換回 \(x\)。上下限換完可能變成「上限比下限小」，照樣算，不要自己對調。`,
+  R`根號裡是一次式（\(\sqrt{x+1}\)、\(\sqrt x\)），直接令 \(u=\) 根號或根號裡面。`,
+  R`對稱技巧：\(\int_0^a\) 的題目長得很對稱時，令 \(x=a-u\)，再跟原式相加。`
+ ],
+ formulas:[R`\int\frac{f'(x)}{f(x)}dx=\ln|f(x)|+C`, R`\int_0^a\frac{f(x)}{f(x)+f(a-x)}dx=\frac a2`],
+ traps:[R`換了 \(u\) 卻忘了換 \(dx\)。`, R`114 上 3(1) 的上限 \(\sin\frac{3\pi}{2}=-1\)。`]},
+
+{key:'parts', title:'分部積分', sec:'8.1', freq:'每份都有 1 到 3 題',
+ core:[
+  R`\(\int u\,dv=uv-\int v\,du\)。\(u\) 的挑法照順序：對數 → 反三角 → 多項式 → 三角 → 指數，排越前面越適合當 \(u\)。`,
+  R`\(\ln x\)、\(\tan^{-1}x\) 單獨出現時，\(dv=dx\)。`,
+  R`多項式乘 \(\sin\)、\(\cos\)、\(e^{ax}\)：用表格法，左欄一直微分到 0，右欄一直積分，斜線相乘正負交替。`,
+  R`\(e^x\cos2x\) 這種：分部兩次會繞回原本的積分，移項解出來。`
+ ],
+ formulas:[R`\int\ln x\,dx=x\ln x-x+C`, R`\int x\ln x\,dx=\frac{x^2}2\ln x-\frac{x^2}4+C`, R`\int e^{ax}\cos bx\,dx=\frac{e^{ax}(a\cos bx+b\sin bx)}{a^2+b^2}+C`],
+ traps:[R`表格法正負號沒有交替。`, R`\(\int\sin2x\,dx=-\frac12\cos2x\)，係數寫錯整題連環錯。`]},
+
+{key:'trig', title:'三角積分', sec:'8.2', freq:'每份 1 到 3 題',
+ core:[
+  R`\(\sin^m x\cos^n x\)：有奇次方的那個拆一個出來當 \(du\)，剩下用 \(\sin^2+\cos^2=1\) 換成另一個。兩個都偶次就降冪。`,
+  R`\(\tan^m x\sec^n x\)：\(\sec\) 偶次方，留 \(\sec^2x\) 給 \(du\)，其他換成 \(\tan\)；\(\tan\) 奇次方，留 \(\sec x\tan x\)，其他換成 \(\sec\)。`,
+  R`\(\sin mx\cos nx\) 這種不同角度相乘：積化和差。`,
+  R`\(\sec^5x\) 這種奇次 \(\sec\)：分部積分，\(u=\sec^3x\)，\(dv=\sec^2x\,dx\)，會繞回來。`
+ ],
+ formulas:[R`\sin^2x=\frac{1-\cos2x}2`, R`\cos^2x=\frac{1+\cos2x}2`, R`\sin A\cos B=\tfrac12[\sin(A+B)+\sin(A-B)]`, R`\sin A\sin B=\tfrac12[\cos(A-B)-\cos(A+B)]`, R`\cos A\cos B=\tfrac12[\cos(A-B)+\cos(A+B)]`, R`1+\tan^2x=\sec^2x`],
+ traps:[R`降冪後忘了 \(\cos2x\) 積分要除以 2。`]},
+
+{key:'tsub', title:'三角代換與配方', sec:'8.3', freq:'每份 1 到 3 題',
+ core:[
+  R`\(\sqrt{a^2-x^2}\)：\(x=a\sin\theta\)。\(\sqrt{a^2+x^2}\)：\(x=a\tan\theta\)。\(\sqrt{x^2-a^2}\)：\(x=a\sec\theta\)。`,
+  R`根號裡有一次項（\(2x-x^2\)、\(8x-x^2\)）先配方。`,
+  R`算完畫直角三角形，把 \(\sin\theta\)、\(\cos\theta\)、\(\tan\theta\) 換回 \(x\)。`,
+  R`\(\int\sqrt{a^2-x^2}dx\) 的結果直接背，定積分時常常就是圓面積的一部分。`
+ ],
+ formulas:[R`\int\sqrt{a^2-x^2}\,dx=\frac x2\sqrt{a^2-x^2}+\frac{a^2}2\sin^{-1}\frac xa+C`, R`\int\frac{x^2}{\sqrt{a^2-x^2}}dx=\frac{a^2}2\sin^{-1}\frac xa-\frac x2\sqrt{a^2-x^2}+C`, R`2x-x^2=1-(x-1)^2`],
+ traps:[R`換回 \(x\) 時，\(\theta\) 要寫 \(\sin^{-1}\frac xa\)，不是 \(\sin^{-1}x\)。`]},
+
+{key:'pf', title:'部分分式', sec:'8.4', freq:'每份 1 到 2 題，幾乎必考',
+ core:[
+  R`第一步：分子次數 \(\ge\) 分母次數，先長除法。`,
+  R`第二步：分母因式分解。一次因式 \(\frac{A}{x-a}\)；重複的 \((x-a)^2\) 要寫 \(\frac{A}{x-a}+\frac{B}{(x-a)^2}\)；不能分解的二次式寫 \(\frac{Cx+D}{x^2+1}\)。`,
+  R`求係數：先代根（讓某個因式等於 0），剩下的比較係數。`,
+  R`\(\frac{Cx+D}{x^2+1}\) 拆成 \(\frac C2\ln(x^2+1)+D\tan^{-1}x\)。`,
+  R`很多題是代換後才變成部分分式：\(u=e^x\)、\(u=\tan\theta\)、\(u=\sec x\)。`
+ ],
+ formulas:[R`\frac{1}{(x-a)(x-b)}=\frac1{a-b}\left(\frac1{x-a}-\frac1{x-b}\right)`],
+ traps:[R`分子能先因式分解約分的（114 上 3(3)），沒約就做，算到崩潰。`]},
+
+{key:'imp', title:'瑕積分', sec:'8.7', freq:'每份 1 題左右',
+ core:[
+  R`兩種：區間到無窮大，或被積函數在區間裡爆掉（端點或<b>中間</b>）。都要寫成極限，不可以直接代。`,
+  R`\(\int_0^1\ln x\,dx=-1\) 已經考了三次以上。過程要寫 \(\lim_{t\to0^+}t\ln t=0\)，用羅必達證。`,
+  R`\(p\) 積分：\(\int_1^\infty\frac{dx}{x^p}\) 在 \(p>1\) 收斂；\(\int_0^1\frac{dx}{x^p}\) 在 \(p<1\) 收斂。`,
+  R`比較判別法：\(0\le f\le g\)，\(g\) 收斂則 \(f\) 收斂；\(f\) 發散則 \(g\) 發散。`
+ ],
+ formulas:[R`\int_0^1\ln x\,dx=-1`, R`\lim_{b\to\infty}b^ne^{-b}=0`],
+ traps:[R`\(\int_{-2}^3\frac{dx}{x+1}\) 中間 \(x=-1\) 爆掉，直接代 ln 是錯的。`, R`\(f\to0\) 不代表 \(\int^\infty f\) 收斂（例如 \(\frac1x\)）。`]},
+
+{key:'vol', title:'面積與旋轉體體積', sec:'5.6、6.1、6.2', freq:'8 份裡 7 份，常一題 8 到 16 分',
+ core:[
+  R`第一步永遠是畫圖、找交點。面積 \(=\int(\text{上}-\text{下})dx\) 或 \(\int(\text{右}-\text{左})dy\)。`,
+  R`圓盤法 \(\pi\int R^2\)；墊圈法 \(\pi\int(R^2-r^2)\)；圓柱殼法 \(2\pi\int(\text{半徑})(\text{高})\)。`,
+  R`選法：切的方向和旋轉軸<b>垂直</b>用墊圈；<b>平行</b>用殼。繞 \(x\) 軸用 \(x\) 切就是墊圈，用 \(y\) 切就是殼。`,
+  R`旋轉軸不是座標軸時（\(y=-1\)、\(x=2\)），半徑是「到那條線的距離」：繞 \(y=-1\) 時半徑 \(=y+1\)；繞 \(x=2\) 時半徑 \(=2-x\)。`
+ ],
+ formulas:[R`V_{\text{washer}}=\pi\int_a^b\left[R(x)^2-r(x)^2\right]dx`, R`V_{\text{shell}}=2\pi\int_a^b(\text{半徑})(\text{高})\,dx`],
+ traps:[R`墊圈法寫成 \(\pi\int(R-r)^2\)。`, R`區域在 \(x\) 軸下方時，半徑要取絕對值。`]},
+
+{key:'arc', title:'弧長與旋轉曲面面積', sec:'6.3、6.4', freq:'8 份裡 5 份',
+ core:[
+  R`弧長 \(L=\int_a^b\sqrt{1+(y')^2}\,dx\)。`,
+  R`繞 \(x\) 軸：\(S=2\pi\int y\sqrt{1+(y')^2}\,dx\)。繞 \(y\) 軸、曲線寫成 \(x=g(y)\)：\(S=2\pi\int x\sqrt{1+(x')^2}\,dy\)。`,
+  R`考題都設計成根號會漂亮消掉：\(\cosh\) 型、\((x+1)^{3/2}\) 型、\(x=2\sqrt{c-y}\) 型。算到根號消不掉，先回頭檢查微分。`
+ ],
+ formulas:[R`x=2\sqrt{c-y}\ \Rightarrow\ x\sqrt{1+(x')^2}=2\sqrt{c+1-y}`, R`y=\tfrac12(e^x+e^{-x})\ \Rightarrow\ \sqrt{1+(y')^2}=\tfrac12(e^x+e^{-x})`],
+ traps:[R`曲面面積少了 \(2\pi\) 或少了 \(y\)。`]},
+
+{key:'adv', title:'壓軸綜合題', sec:'7.1、7.3 與綜合', freq:'暑修卷最愛，學期卷偶爾當加分題',
+ core:[
+  R`反函數積分：\(\int_a^bf(x)dx+\int_{f(a)}^{f(b)}f^{-1}(x)dx=bf(b)-af(a)\)。原函數積不出來時，改積反函數。`,
+  R`反函數微分：\((f^{-1})'(x)=\dfrac1{f'(f^{-1}(x))}\)。`,
+  R`雙曲函數：\(\sinh x=\frac{e^x-e^{-x}}2\)，\(\cosh x=\frac{e^x+e^{-x}}2\)，\(\cosh^2-\sinh^2=1\)。`,
+  R`\(\int(f+f'')\sin x\) 這種：對 \(f''\) 做兩次分部，讓它跟 \(f\) 的部分抵銷。`
+ ],
+ formulas:[R`\sinh^{-1}x=\ln\left(x+\sqrt{1+x^2}\right)`],
+ traps:[R`題目給一堆條件，不一定每個都要用。`]}
+];
+
+const SKIP_NOTE = R`課本範圍裡的最佳化（4.6）、牛頓法（4.7）、功（6.5）、質心（6.6）、數值積分（8.6）在 8 份考古題裡都沒出過。時間不夠可以排最後，但老師不保證不考，有空還是翻一下例題。`;
+
+const CARDS = [
+ [R`\int\sec x\,dx`, R`\ln|\sec x+\tan x|+C`],
+ [R`\int\csc x\,dx`, R`-\ln|\csc x+\cot x|+C`],
+ [R`\int\tan x\,dx`, R`\ln|\sec x|+C`],
+ [R`\int\cot x\,dx`, R`\ln|\sin x|+C`],
+ [R`\int\sec^3x\,dx`, R`\tfrac12(\sec x\tan x+\ln|\sec x+\tan x|)+C`],
+ [R`\int\sec^2x\,dx`, R`\tan x+C`],
+ [R`\int\sec x\tan x\,dx`, R`\sec x+C`],
+ [R`\int\csc^2x\,dx`, R`-\cot x+C`],
+ [R`\int\frac{dx}{a^2+x^2}`, R`\frac1a\tan^{-1}\frac xa+C`],
+ [R`\int\frac{dx}{\sqrt{a^2-x^2}}`, R`\sin^{-1}\frac xa+C`],
+ [R`\int\frac{dx}{\sqrt{x^2+a^2}}`, R`\ln\left(x+\sqrt{x^2+a^2}\right)+C`],
+ [R`\int\frac{dx}{\sqrt{x^2-a^2}}`, R`\ln\left|x+\sqrt{x^2-a^2}\right|+C`],
+ [R`\int\frac{dx}{x^2-a^2}`, R`\frac1{2a}\ln\left|\frac{x-a}{x+a}\right|+C`],
+ [R`\int\sqrt{a^2-x^2}\,dx`, R`\frac x2\sqrt{a^2-x^2}+\frac{a^2}2\sin^{-1}\frac xa+C`],
+ [R`\int\ln x\,dx`, R`x\ln x-x+C`],
+ [R`\int a^x\,dx`, R`\frac{a^x}{\ln a}+C`],
+ [R`\sin^2x=?`, R`\frac{1-\cos2x}{2}`],
+ [R`\cos^2x=?`, R`\frac{1+\cos2x}{2}`],
+ [R`\sin A\cos B=?`, R`\tfrac12[\sin(A+B)+\sin(A-B)]`],
+ [R`\frac{d}{dx}\tan^{-1}x`, R`\frac1{1+x^2}`],
+ [R`\frac{d}{dx}\sin^{-1}x`, R`\frac1{\sqrt{1-x^2}}`],
+ [R`\frac{d}{dx}\int_a^{g(x)}f(t)\,dt`, R`f(g(x))\,g'(x)`],
+ [R`\lim_{x\to\infty}\left(1+\frac ax\right)^{bx}`, R`e^{ab}`],
+ [R`\lim_{x\to0^+}x\ln x`, R`0`],
+ [R`\int_0^1\ln x\,dx`, R`-1`],
+ [R`\int_1^\infty\frac{dx}{x^p}\ \text{收斂條件}`, R`p>1`],
+ [R`\int_0^1\frac{dx}{x^p}\ \text{收斂條件}`, R`p<1`],
+ [R`\text{墊圈法}`, R`\pi\int_a^b(R^2-r^2)\,dx`],
+ [R`\text{圓柱殼法}`, R`2\pi\int_a^b(\text{半徑})(\text{高})\,dx`],
+ [R`\text{弧長}`, R`\int_a^b\sqrt{1+(y')^2}\,dx`],
+ [R`\text{繞 }x\text{ 軸曲面面積}`, R`2\pi\int_a^b y\sqrt{1+(y')^2}\,dx`],
+ [R`\text{平均值}`, R`\frac1{b-a}\int_a^bf(x)\,dx`],
+ [R`\int_a^bf\,dx+\int_{f(a)}^{f(b)}f^{-1}dx`, R`bf(b)-af(a)`]
+];
+
+const GLOSSARY = [
+ ['Evaluate the integral','計算積分'],['Find the limit if it exists','求極限（若存在）'],
+ ['L’Hôpital’s Rule','羅必達法則'],['indeterminate form','不定型'],
+ ['antiderivative','反導數'],['improper integral','瑕積分'],['converge / diverge','收斂／發散'],
+ ['Riemann sum','黎曼和'],['average value','平均值'],['region bounded by','由……圍成的區域'],
+ ['revolving ... about the x-axis','繞 x 軸旋轉'],['solid generated','旋轉所生成的立體'],
+ ['Washer Method','墊圈法'],['Shell Method','圓柱殼法'],['Disk Method','圓盤法'],
+ ['arc length','弧長'],['area of the surface','曲面面積'],['one-to-one','一對一'],
+ ['increasing / decreasing','遞增／遞減'],['horizontal asymptote','水平漸近線'],
+ ['inflection point','反曲點'],['initial value problem','初值問題'],['sub-interval','子區間'],['Show that / Prove','證明']
+];
+
+/* 指定習題：課本題號，依週次 */
+const WEEKS = [
+ {w:9, from:'11/02', to:'11/08', start:'2026-11-02', secs:['4.5','4.8','5.1']},
+ {w:10, from:'11/09', to:'11/15', start:'2026-11-09', secs:['5.2','5.3','5.4']},
+ {w:11, from:'11/16', to:'11/22', start:'2026-11-16', secs:['5.5','5.6','6.1']},
+ {w:12, from:'11/23', to:'11/29', start:'2026-11-23', secs:['6.2','6.3','6.4']},
+ {w:13, from:'11/30', to:'12/06', start:'2026-11-30', secs:['8.1','8.2','8.3']},
+ {w:14, from:'12/07', to:'12/13', start:'2026-12-07', secs:['8.4','8.7']}
+];
+const SEC_TOPIC = {'4.5':'lhop','4.8':'basic','5.1':'riemann','5.2':'riemann','5.3':'riemann','5.4':'ftc','5.5':'sub','5.6':'sub','6.1':'vol','6.2':'vol','6.3':'arc','6.4':'arc','8.1':'parts','8.2':'trig','8.3':'tsub','8.4':'pf','8.7':'imp'};
+const SEC_WEEK = {}; WEEKS.forEach(w=>w.secs.forEach(s=>SEC_WEEK[s]=w.w));
+
+const HW_RAW = [
+/* 4.5 */
+['4.5','30',R`\(\displaystyle\lim_{x\to0}\frac{3^x-1}{2^x-1}\)`,R`\(\dfrac{\ln3}{\ln2}\)`,R`\(\frac00\)，記得 \((a^x)'=a^x\ln a\)。`,
+ [R`羅必達：\(\dfrac{3^x\ln3}{2^x\ln2}\to\dfrac{\ln3}{\ln2}\)`]],
+['4.5','35',R`\(\displaystyle\lim_{y\to0}\frac{\sqrt{5y+25}-5}{y}\)`,R`\(\dfrac12\)`,R`\(\frac00\)，分子微分用連鎖律。`,
+ [R`\(\dfrac{\frac{5}{2\sqrt{5y+25}}}{1}\to\dfrac{5}{10}=\dfrac12\)`]],
+['4.5','37',R`\(\displaystyle\lim_{x\to\infty}\left(\ln2x-\ln(x+1)\right)\)`,R`\(\ln2\)`,R`\(\infty-\infty\)，先合成一個 ln。`,
+ [R`\(=\ln\dfrac{2x}{x+1}\)，裡面 \(\dfrac{2x}{x+1}\overset{L}{\to}2\)。`,R`ln 連續，答案 \(\ln2\)。`]],
+['4.5','54',R`\(\displaystyle\lim_{x\to e^+}(\ln x)^{1/(x-e)}\)`,R`\(e^{1/e}\)`,R`\(1^\infty\)，取 ln。`,
+ [R`\(\ln L=\lim\dfrac{\ln(\ln x)}{x-e}\)，\(\frac00\)。`,R`微分：\(\dfrac{\frac{1}{x\ln x}}{1}\to\dfrac1{e\cdot1}=\dfrac1e\)。`,R`\(L=e^{1/e}\)`]],
+['4.5','59',R`\(\displaystyle\lim_{x\to0^+}x^x\)`,R`\(1\)`,R`\(0^0\)，取 ln。`,
+ [R`\(\ln L=\lim x\ln x=\lim\dfrac{\ln x}{1/x}\overset L=\lim(-x)=0\)`,R`\(L=e^0=1\)`]],
+['4.5','63',R`\(\displaystyle\lim_{x\to0^+}x^2\ln x\)`,R`\(0\)`,R`跟 113 暑考題一模一樣。`,
+ [R`\(\dfrac{\ln x}{x^{-2}}\overset L=\dfrac{1/x}{-2x^{-3}}=-\dfrac{x^2}2\to0\)`]],
+['4.5','74',R`\(\displaystyle\lim_{x\to0^+}\frac{x}{e^{-1/x}}\)`,R`\(\infty\)`,R`課本說羅必達在這題會繞圈圈，改寫成 \(xe^{1/x}\)。`,
+ [R`直接用羅必達會越微越複雜。改寫成 \(xe^{1/x}=\dfrac{e^{1/x}}{1/x}\)，令 \(t=\frac1x\to\infty\)：\(\dfrac{e^t}{t}\)。`,R`\(\dfrac{e^t}{t}\overset L=e^t\to\infty\)`]],
+/* 4.8 */
+['4.8','33',R`\(\displaystyle\int x^{-1/3}dx\)`,R`\(\frac32x^{2/3}+C\)`,R`冪次公式。`,[R`\(\dfrac{x^{2/3}}{2/3}+C\)`]],
+['4.8','62',R`\(\displaystyle\int\left(\frac{2}{\sqrt{1-y^2}}-\frac{1}{y^{1/4}}\right)dy\)`,R`\(2\sin^{-1}y-\frac43y^{3/4}+C\)`,R`前面是反正弦。`,
+ [R`\(\int\frac{2}{\sqrt{1-y^2}}dy=2\sin^{-1}y\)；\(\int y^{-1/4}dy=\frac43y^{3/4}\)。`]],
+['4.8','68',R`\(\displaystyle\int(1-\cot^2x)\,dx\)`,R`\(2x+\cot x+C\)`,R`\(\cot^2x=\csc^2x-1\)`,
+ [R`\(1-(\csc^2x-1)=2-\csc^2x\)`,R`\(\int(2-\csc^2x)dx=2x+\cot x+C\)`]],
+['4.8','76',R`用微分驗證：\(\displaystyle\int\frac{1}{(x+1)^2}dx=\frac{x}{x+1}+C\)`,R`正確`,R`微分右邊看看。`,
+ [R`\(\dfrac{d}{dx}\dfrac{x}{x+1}=\dfrac{(x+1)-x}{(x+1)^2}=\dfrac1{(x+1)^2}\)，所以成立。`,R`它跟常見答案 \(-\frac1{x+1}\) 只差一個常數 1，兩個都對。`]],
+['4.8','78',R`用微分驗證：\(\displaystyle\int xe^x\,dx=xe^x-e^x+C\)`,R`正確`,R`乘法法則。`,
+ [R`\((xe^x-e^x)'=e^x+xe^x-e^x=xe^x\)`]],
+/* 5.1 */
+['5.1','2',R`\(f(x)=x^3\)，\(0\le x\le1\)。估計面積：(a) 兩個矩形的下和 (b) 四個矩形的下和 (c) 兩個矩形的上和 (d) 四個矩形的上和。`,R`(a) \(\frac1{16}\) (b) \(\frac9{64}\) (c) \(\frac9{16}\) (d) \(\frac{25}{64}\)`,R`\(x^3\) 遞增，下和取左端點，上和取右端點。`,
+ [R`(a) 寬 \(\frac12\)：\(\frac12\left(0+\frac18\right)=\frac1{16}\)`,R`(b) 寬 \(\frac14\)：\(\frac14\cdot\frac{0+1+8+27}{64}=\frac9{64}\)`,R`(c) \(\frac12\left(\frac18+1\right)=\frac9{16}\)`,R`(d) \(\frac14\cdot\frac{1+8+27+64}{64}=\frac{25}{64}\)。真正面積 \(\frac14\) 夾在下和與上和中間。`]],
+['5.1','4',R`\(f(x)=4-x^2\)，\(-2\le x\le2\)。估計面積：(a) 兩個矩形的下和 (b) 四個矩形的下和 (c) 兩個矩形的上和 (d) 四個矩形的上和。`,R`(a) 0 (b) 6 (c) 16 (d) 14`,R`函數先增後減，每一段要分別找最大最小值。`,
+ [R`(a) \([-2,0]\) 和 \([0,2]\) 的最小值都是 0，下和 0。`,R`(b) 寬 1，四段最小值 \(0,3,3,0\)，下和 6。`,R`(c) 兩段最大值都是 \(f(0)=4\)，上和 \(2\cdot4+2\cdot4=16\)。`,R`(d) 四段最大值 \(3,4,4,3\)，上和 14。`]],
+/* 5.2 */
+['5.2','47',R`\(f(x)=x+x^2\) 在 \([0,1]\)，分 \(n\) 等份用右端點寫黎曼和，取 \(n\to\infty\) 求面積。`,R`\(\dfrac56\)`,R`\(\sum k=\frac{n(n+1)}2\)，\(\sum k^2=\frac{n(n+1)(2n+1)}6\)。`,
+ [R`\(\Delta x=\frac1n\)，\(c_k=\frac kn\)：\(S_n=\sum_{k=1}^n\left(\frac kn+\frac{k^2}{n^2}\right)\frac1n=\frac1{n^2}\sum k+\frac1{n^3}\sum k^2\)`,R`\(=\dfrac{n+1}{2n}+\dfrac{(n+1)(2n+1)}{6n^2}\)`,R`\(n\to\infty\)：\(\frac12+\frac13=\frac56\)`]],
+/* 5.3 */
+['5.3','5',R`把 \(\displaystyle\lim_{\|P\|\to0}\sum_{k=1}^n\frac{1}{1-c_k}\Delta x_k\)（\(P\) 是 \([2,3]\) 的分割）寫成定積分。`,R`\(\displaystyle\int_2^3\frac{1}{1-x}dx\)`,R`\(c_k\) 換成 \(x\)，\(\Delta x_k\) 換成 \(dx\)。`,
+ [R`直接對應：\(\int_2^3\frac{dx}{1-x}\)。（算出來是 \(-\ln2\)）`]],
+['5.3','17',R`用面積公式算 \(\displaystyle\int_{-3}^3\sqrt{9-x^2}\,dx\)`,R`\(\dfrac{9\pi}{2}\)`,R`這是半徑 3 的上半圓。`,[R`半圓面積 \(\frac12\pi\cdot3^2=\frac{9\pi}2\)`]],
+['5.3','49',R`\(\displaystyle\int_0^2(3x^2+x-5)\,dx\)`,R`\(0\)`,R`逐項積分。`,[R`\(\left[x^3+\frac{x^2}2-5x\right]_0^2=8+2-10=0\)`]],
+['5.3','68',R`用定義（黎曼和取極限）算 \(\displaystyle\int_{-1}^1x^3\,dx\)`,R`\(0\)`,R`\(\Delta x=\frac2n\)，\(c_k=-1+\frac{2k}n\)。`,
+ [R`\(S_n=\sum\left(-1+\frac{2k}n\right)^3\frac2n\)，展開後用 \(\sum k,\sum k^2,\sum k^3\) 的公式。`,R`取極限得 0。直觀上 \(x^3\) 是奇函數，區間對稱，正負面積抵銷。`]],
+/* 5.4 */
+['5.4','33',R`\(\displaystyle\int_2^4x^{\pi-1}dx\)`,R`\(\dfrac{4^\pi-2^\pi}{\pi}\)`,R`冪次公式，指數 \(\pi-1\)。`,[R`\(\left[\frac{x^\pi}\pi\right]_2^4=\frac{4^\pi-2^\pi}\pi\)`]],
+['5.4','34',R`\(\displaystyle\int_{-1}^0\pi^{x-1}dx\)`,R`\(\dfrac{\pi-1}{\pi^2\ln\pi}\)`,R`\(\int a^x dx=\frac{a^x}{\ln a}\)`,[R`\(\left[\frac{\pi^{x-1}}{\ln\pi}\right]_{-1}^0=\frac{\pi^{-1}-\pi^{-2}}{\ln\pi}=\frac{\pi-1}{\pi^2\ln\pi}\)`]],
+['5.4','41',R`\(\displaystyle\frac{d}{dt}\int_0^{t^4}\sqrt u\,du\)（兩種方法）`,R`\(4t^5\)`,R`(a) 先積分再微分 (b) 直接用基本定理。`,
+ [R`(a) \(\int_0^{t^4}\sqrt u\,du=\frac23t^6\)，微分 \(4t^5\)。`,R`(b) \(\sqrt{t^4}\cdot4t^3=t^2\cdot4t^3=4t^5\)`]],
+['5.4','42',R`\(\displaystyle\frac{d}{d\theta}\int_0^{\tan\theta}\sec^2y\,dy\)（兩種方法）`,R`\(\sec^2(\tan\theta)\sec^2\theta\)`,R`上限是 \(\tan\theta\)。`,
+ [R`(a) 積分 \(=\tan(\tan\theta)\)，微分 \(\sec^2(\tan\theta)\sec^2\theta\)。`,R`(b) \(\sec^2(\tan\theta)\cdot(\tan\theta)'\)，一樣。`]],
+['5.4','47',R`\(y=\displaystyle\int_{\sqrt x}^0\sin(t^2)\,dt\)，求 \(\frac{dy}{dx}\)。`,R`\(-\dfrac{\sin x}{2\sqrt x}\)`,R`變數在下限，先翻號。`,
+ [R`\(y=-\int_0^{\sqrt x}\sin t^2dt\)`,R`\(y'=-\sin\left((\sqrt x)^2\right)\cdot\frac1{2\sqrt x}=-\frac{\sin x}{2\sqrt x}\)`]],
+['5.4','48',R`\(y=x\displaystyle\int_2^{x^2}\sin(t^3)\,dt\)，求 \(\frac{dy}{dx}\)。`,R`\(\displaystyle\int_2^{x^2}\sin(t^3)dt+2x^2\sin(x^6)\)`,R`乘法法則加基本定理。`,
+ [R`\(y'=1\cdot\int_2^{x^2}\sin t^3dt+x\cdot\sin\left((x^2)^3\right)\cdot2x\)`,R`\(=\int_2^{x^2}\sin t^3dt+2x^2\sin(x^6)\)`]],
+/* 5.5 */
+['5.5','4',R`\(\displaystyle\int\frac{4x^3}{(x^4+1)^2}dx\)，令 \(u=x^4+1\)`,R`\(-\dfrac1{x^4+1}+C\)`,R`\(du=4x^3dx\)`,[R`\(\int u^{-2}du=-u^{-1}+C\)`]],
+['5.5','13',R`\(\displaystyle\int\sqrt x\sin^2(x^{3/2}-1)\,dx\)，令 \(u=x^{3/2}-1\)`,R`\(\frac13(x^{3/2}-1)-\frac16\sin(2x^{3/2}-2)+C\)`,R`\(du=\frac32\sqrt x\,dx\)，再降冪。`,
+ [R`\(\frac23\int\sin^2u\,du=\frac23\left(\frac u2-\frac{\sin2u}4\right)\)`,R`換回：\(\frac13(x^{3/2}-1)-\frac16\sin(2x^{3/2}-2)+C\)`]],
+['5.5','16',R`\(\displaystyle\int\frac{dx}{\sqrt{5x+8}}\)：(a) 令 \(u=5x+8\) (b) 令 \(u=\sqrt{5x+8}\)`,R`\(\frac25\sqrt{5x+8}+C\)`,R`兩種代換答案一樣。`,
+ [R`(a) \(\frac15\int u^{-1/2}du=\frac25\sqrt u\)`,R`(b) \(u^2=5x+8\)，\(2u\,du=5dx\)：\(\int\frac{1}{u}\cdot\frac{2u}5du=\frac25u\)`]],
+['5.5','26',R`\(\displaystyle\int\tan^7\frac x2\sec^2\frac x2\,dx\)`,R`\(\frac14\tan^8\frac x2+C\)`,R`\(u=\tan\frac x2\)，\(du=\frac12\sec^2\frac x2dx\)。`,[R`\(2\int u^7du=\frac{u^8}4+C\)`]],
+['5.5','42',R`\(\displaystyle\int\sqrt{\frac{x^4}{x^3-1}}\,dx\)`,R`\(\frac23\sqrt{x^3-1}+C\)`,R`根號裡的 \(x^4\) 開出來是 \(x^2\)。`,[R`\(\int\frac{x^2}{\sqrt{x^3-1}}dx\)，\(u=x^3-1\)，\(du=3x^2dx\)：\(\frac13\int u^{-1/2}du=\frac23\sqrt u\)`]],
+['5.5','58',R`\(\displaystyle\int\frac{dx}{x\sqrt{x^4-1}}\)`,R`\(\frac12\sec^{-1}(x^2)+C\)`,R`令 \(u=x^2\)，用 \(\int\frac{du}{u\sqrt{u^2-1}}=\sec^{-1}|u|\)。`,
+ [R`分子分母同乘 \(x\)：\(\int\frac{x\,dx}{x^2\sqrt{x^4-1}}\)，\(u=x^2\)，\(du=2x\,dx\)。`,R`\(\frac12\int\frac{du}{u\sqrt{u^2-1}}=\frac12\sec^{-1}|u|+C\)`]],
+['5.5','68',R`\(\displaystyle\int\sqrt{1+\sin^2(x-1)}\sin(x-1)\cos(x-1)\,dx\)`,R`\(\frac13\left(1+\sin^2(x-1)\right)^{3/2}+C\)`,R`一步到位：\(u=1+\sin^2(x-1)\)。`,
+ [R`\(du=2\sin(x-1)\cos(x-1)dx\)`,R`\(\frac12\int u^{1/2}du=\frac13u^{3/2}+C\)`]],
+/* 5.6 */
+['5.6','6',R`(a) \(\displaystyle\int_0^{\sqrt7}t(t^2+1)^{1/3}dt\)　(b) \(\displaystyle\int_{-\sqrt7}^0t(t^2+1)^{1/3}dt\)`,R`(a) \(\frac{45}8\)　(b) \(-\frac{45}8\)`,R`\(u=t^2+1\)，上下限一起換。`,
+ [R`\(\frac12\int u^{1/3}du=\frac38u^{4/3}\)`,R`(a) \(u:1\to8\)：\(\frac38(16-1)=\frac{45}8\)`,R`(b) \(u:8\to1\)，結果變號 \(-\frac{45}8\)（被積函數是奇函數）。`]],
+['5.6','10',R`(a) \(\displaystyle\int_0^1\frac{x^3}{\sqrt{x^4+9}}dx\)　(b) \(\displaystyle\int_{-1}^0\frac{x^3}{\sqrt{x^4+9}}dx\)`,R`(a) \(\frac{\sqrt{10}-3}2\)　(b) \(-\frac{\sqrt{10}-3}2\)`,R`\(u=x^4+9\)。`,
+ [R`反導數 \(\frac12\sqrt{x^4+9}\)。`,R`(a) \(\frac12(\sqrt{10}-3)\)；(b) 奇函數，答案變號。`]],
+['5.6','14',R`(a) \(\displaystyle\int_{-\pi/2}^0\left(2+\tan\frac t2\right)\sec^2\frac t2\,dt\)　(b) \(\displaystyle\int_{-\pi/2}^{\pi/2}\)（同一個被積函數）`,R`(a) 3　(b) 8`,R`\(u=\tan\frac t2\)，\(du=\frac12\sec^2\frac t2dt\)。`,
+ [R`\(t=-\frac\pi2\to u=-1\)，\(t=0\to u=0\)，\(t=\frac\pi2\to u=1\)。`,R`(a) \(2\int_{-1}^0(2+u)du=2\left(2-\frac12\right)=3\)`,R`(b) \(2\int_{-1}^1(2+u)du=2\cdot4=8\)`]],
+['5.6','30',R`\(\displaystyle\int_2^4\frac{dx}{x\ln x}\)`,R`\(\ln2\)`,R`\(u=\ln x\)。`,[R`\(\left[\ln(\ln x)\right]_2^4=\ln(2\ln2)-\ln(\ln2)=\ln2\)`]],
+['5.6','40',R`\(\displaystyle\int_1^{e^{\pi/4}}\frac{4\,dt}{t(1+\ln^2t)}\)`,R`\(4\tan^{-1}\dfrac\pi4\)`,R`\(u=\ln t\)。`,[R`\(u:0\to\frac\pi4\)：\(4\int_0^{\pi/4}\frac{du}{1+u^2}=4\tan^{-1}\frac\pi4\)`]],
+['5.6','47',R`\(\displaystyle\int_0^1\frac{\tan^{-1}x}{1+x^2}dx\)`,R`\(\dfrac{\pi^2}{32}\)`,R`\(u=\tan^{-1}x\)。`,[R`\(\int_0^{\pi/4}u\,du=\frac12\left(\frac\pi4\right)^2=\frac{\pi^2}{32}\)`]],
+['5.6','55',R`求 \(y=2x^2\) 和 \(y=x^4-2x^2\) 在 \(-2\le x\le2\) 圍成的面積。`,R`\(\dfrac{128}{15}\)`,R`交點 \(x=0,\pm2\)，\(2x^2\) 在上面。`,
+ [R`\(A=\int_{-2}^2\left(2x^2-(x^4-2x^2)\right)dx=2\int_0^2(4x^2-x^4)dx\)`,R`\(=2\left(\frac{32}3-\frac{32}5\right)=\frac{128}{15}\)`]],
+['5.6','59',R`求 \(y=x\)、\(y=1\)、\(y=\frac{x^2}4\) 圍成的區域面積（第一象限）。`,R`\(\dfrac56\)`,R`上邊界在 \(x=1\) 換人，拆兩段。`,
+ [R`\(0\le x\le1\)：上 \(x\)、下 \(\frac{x^2}4\)；\(1\le x\le2\)：上 1、下 \(\frac{x^2}4\)。`,R`\(\int_0^1\left(x-\frac{x^2}4\right)dx+\int_1^2\left(1-\frac{x^2}4\right)dx=\frac5{12}+\frac5{12}=\frac56\)`,R`也可以用 \(y\) 積：\(\int_0^1(2\sqrt y-y)dy=\frac56\)。`]],
+['5.6','83',R`求 \(4x^2+y=4\) 與 \(x^4-y=1\) 圍成的面積。`,R`\(\dfrac{104}{15}\)`,R`寫成 \(y=4-4x^2\)、\(y=x^4-1\)。`,
+ [R`交點：\(4-4x^2=x^4-1\Rightarrow x^4+4x^2-5=0\Rightarrow x^2=1\)。`,R`\(A=\int_{-1}^1(5-4x^2-x^4)dx=2\left(5-\frac43-\frac15\right)=\frac{104}{15}\)`]],
+/* 6.1 */
+['6.1','5',R`立體的底是 \(y=2\sqrt{\sin x}\) 和 \(x\) 軸在 \([0,\pi]\) 間的區域，垂直 \(x\) 軸的截面是 (a) 正三角形 (b) 正方形，底邊從 \(x\) 軸到曲線。求體積。`,R`(a) \(2\sqrt3\)　(b) 8`,R`截面邊長 \(s=2\sqrt{\sin x}\)。`,
+ [R`(a) 正三角形面積 \(\frac{\sqrt3}4s^2=\sqrt3\sin x\)，\(V=\sqrt3\int_0^\pi\sin x\,dx=2\sqrt3\)。`,R`(b) \(s^2=4\sin x\)，\(V=4\cdot2=8\)。`]],
+['6.1','14',R`卡瓦列里原理：立體在 \(x=0\) 到 \(x=12\)，截面是圓，直徑從 \(y=\frac x2\) 到 \(y=x\)。說明它和底半徑 3、高 12 的圓錐體積相同。`,R`都是 \(36\pi\)`,R`算截面半徑。`,
+ [R`直徑 \(x-\frac x2=\frac x2\)，半徑 \(\frac x4\)，截面積 \(\frac{\pi x^2}{16}\)。`,R`圓錐在 \(x\) 處的半徑也是 \(\frac{3}{12}x=\frac x4\)，每個截面積都一樣，所以體積相同。`,R`\(V=\int_0^{12}\frac{\pi x^2}{16}dx=36\pi=\frac13\pi\cdot9\cdot12\)`]],
+['6.1','19',R`區域在 \(y\) 軸和 \(x=\tan\left(\frac\pi4y\right)\) 之間，\(0\le y\le1\)，繞 \(y\) 軸，求體積。`,R`\(4-\pi\)`,R`圓盤法，半徑 \(\tan\frac{\pi y}4\)。`,
+ [R`\(V=\pi\int_0^1\tan^2\frac{\pi y}4dy=\pi\int_0^1\left(\sec^2\frac{\pi y}4-1\right)dy\)`,R`\(=\pi\left[\frac4\pi\tan\frac{\pi y}4-y\right]_0^1=\pi\left(\frac4\pi-1\right)=4-\pi\)`]],
+['6.1','21',R`\(y=x^2\)、\(y=0\)、\(x=2\) 圍成的區域繞 \(x\) 軸，求體積。`,R`\(\dfrac{32\pi}5\)`,R`圓盤法。`,[R`\(\pi\int_0^2x^4dx=\frac{32\pi}5\)`]],
+['6.1','39',R`\(y=1\) 與 \(y=\sqrt{\cos x}\) 在 \(-\frac\pi2\le x\le\frac\pi2\) 之間的區域繞 \(x\) 軸，求體積。`,R`\(\pi^2-2\pi\)`,R`墊圈法，外半徑 1、內半徑 \(\sqrt{\cos x}\)。`,
+ [R`\(V=\pi\int_{-\pi/2}^{\pi/2}(1-\cos x)dx=\pi(\pi-2)\)`]],
+['6.1','47',R`頂點 \((1,0),(2,1),(1,1)\) 的三角形繞 \(y\) 軸，求體積。`,R`\(\dfrac{4\pi}3\)`,R`用 \(y\) 切，斜邊是 \(x=1+y\)。`,
+ [R`墊圈：外半徑 \(1+y\)，內半徑 1。`,R`\(\pi\int_0^1\left((1+y)^2-1\right)dy=\pi\int_0^1(2y+y^2)dy=\frac{4\pi}3\)`]],
+['6.1','51',R`第一象限中 \(y=x^2\) 下方、\(x\) 軸上方、\(x=1\) 左方的區域，繞 \(x=-1\)，求體積。`,R`\(\dfrac{7\pi}6\)`,R`繞直立線，用 \(y\) 切：半徑要從 \(x=-1\) 量。`,
+ [R`外半徑 \(1-(-1)=2\)，內半徑 \(\sqrt y+1\)。`,R`\(\pi\int_0^1\left(4-(\sqrt y+1)^2\right)dy=\pi\int_0^1(3-2\sqrt y-y)dy=\pi\left(3-\frac43-\frac12\right)=\frac{7\pi}6\)`,R`用圓柱殼驗算：\(2\pi\int_0^1(x+1)x^2dx=\frac{7\pi}6\)`]],
+['6.1','53',R`\(y=\sqrt x\)、\(y=2\)、\(x=0\) 圍成的區域，分別繞 (a) \(x\) 軸 (b) \(y\) 軸 (c) \(y=2\) (d) \(x=4\)，求體積。`,R`(a) \(8\pi\) (b) \(\frac{32\pi}5\) (c) \(\frac{8\pi}3\) (d) \(\frac{256\pi}{15}\)`,R`區域在 \(0\le x\le4\)，曲線在下、\(y=2\) 在上。`,
+ [R`(a) 墊圈：\(\pi\int_0^4(4-x)dx=8\pi\)`,R`(b) 用 \(y\) 切，半徑 \(y^2\)：\(\pi\int_0^2y^4dy=\frac{32\pi}5\)`,R`(c) 半徑 \(2-\sqrt x\)：\(\pi\int_0^4(2-\sqrt x)^2dx=\frac{8\pi}3\)`,R`(d) 半徑 \(4-y^2\)：\(\pi\int_0^2(4-y^2)^2dy=\frac{256\pi}{15}\)`]],
+['6.1','57',R`圓盤 \(x^2+y^2\le a^2\) 繞 \(x=b\ (b>a)\) 旋轉成甜甜圈，求體積。`,R`\(2\pi^2a^2b\)`,R`提示：\(\int_{-a}^a\sqrt{a^2-y^2}dy=\frac{\pi a^2}2\)。`,
+ [R`用 \(y\) 切，墊圈外半徑 \(b+\sqrt{a^2-y^2}\)，內半徑 \(b-\sqrt{a^2-y^2}\)。`,R`\(R^2-r^2=4b\sqrt{a^2-y^2}\)`,R`\(V=\pi\int_{-a}^a4b\sqrt{a^2-y^2}dy=4\pi b\cdot\frac{\pi a^2}2=2\pi^2a^2b\)`]],
+/* 6.2 */
+['6.2','3',R`區域在 \(y\) 軸、\(x=y^2\) 和 \(y=\sqrt2\) 之間，繞 \(x\) 軸，用圓柱殼法求體積。`,R`\(2\pi\)`,R`繞 \(x\) 軸、用 \(y\) 切：殼。半徑 \(y\)，高 \(y^2\)。`,[R`\(2\pi\int_0^{\sqrt2}y\cdot y^2dy=2\pi\cdot\frac{(\sqrt2)^4}4=2\pi\)`]],
+['6.2','5',R`\(y=\sqrt{x^2+1}\) 下方、\(0\le x\le\sqrt3\) 的區域繞 \(y\) 軸，用圓柱殼法求體積。`,R`\(\dfrac{14\pi}3\)`,R`半徑 \(x\)，高 \(\sqrt{x^2+1}\)。`,[R`\(2\pi\int_0^{\sqrt3}x\sqrt{x^2+1}dx=2\pi\cdot\frac13\left[(x^2+1)^{3/2}\right]_0^{\sqrt3}=\frac{2\pi}3(8-1)=\frac{14\pi}3\)`]],
+['6.2','25',R`\(y=x+2\) 與 \(y=x^2\) 圍成的區域，繞 (a) \(x=2\) (b) \(x=-1\) (c) \(x\) 軸 (d) \(y=4\)，求體積。`,R`(a) \(\frac{27\pi}2\) (b) \(\frac{27\pi}2\) (c) \(\frac{72\pi}5\) (d) \(\frac{108\pi}5\)`,R`交點 \(x=-1,2\)。(a)(b) 繞直立線用殼，(c)(d) 繞水平線用墊圈比較快。`,
+ [R`(a) \(2\pi\int_{-1}^2(2-x)(x+2-x^2)dx=\frac{27\pi}2\)（111 年考過）`,R`(b) \(2\pi\int_{-1}^2(x+1)(x+2-x^2)dx=2\pi\int_{-1}^2(-x^3+3x+2)dx=\frac{27\pi}2\)`,R`(c) \(\pi\int_{-1}^2\left((x+2)^2-x^4\right)dx=\frac{72\pi}5\)（112 年考過）`,R`(d) 外半徑 \(4-x^2\)、內半徑 \(4-(x+2)=2-x\)：\(\pi\int_{-1}^2\left((4-x^2)^2-(2-x)^2\right)dx=\frac{108\pi}5\)`]],
+['6.2','32',R`\(y=\sqrt x\)、\(y=2\)、\(x=0\) 圍成的區域，繞 (a) \(x\) 軸 (b) \(y\) 軸 (c) \(x=4\) (d) \(y=2\)，用圓柱殼法。`,R`(a) \(8\pi\) (b) \(\frac{32\pi}5\) (c) \(\frac{256\pi}{15}\) (d) \(\frac{8\pi}3\)`,R`跟 6.1 第 53 題同一個區域，答案應該一樣。`,
+ [R`(a) 用 \(y\) 切，半徑 \(y\)、高 \(y^2\)：\(2\pi\int_0^2y^3dy=8\pi\)`,R`(b) 用 \(x\) 切，半徑 \(x\)、高 \(2-\sqrt x\)：\(2\pi\int_0^4x(2-\sqrt x)dx=\frac{32\pi}5\)`,R`(c) 半徑 \(4-x\)：\(2\pi\int_0^4(4-x)(2-\sqrt x)dx=\frac{256\pi}{15}\)`,R`(d) 用 \(y\) 切，半徑 \(2-y\)、高 \(y^2\)：\(2\pi\int_0^2(2-y)y^2dy=\frac{8\pi}3\)`]],
+/* 6.3 */
+['6.3','3',R`\(x=\frac{y^3}3+\frac1{4y}\)，\(1\le y\le3\) 的弧長。`,R`\(\dfrac{53}6\)`,R`\(1+(x')^2\) 會是完全平方。`,
+ [R`\(x'=y^2-\frac1{4y^2}\)，\(1+(x')^2=\left(y^2+\frac1{4y^2}\right)^2\)。`,R`\(L=\int_1^3\left(y^2+\frac1{4y^2}\right)dy=\left[\frac{y^3}3-\frac1{4y}\right]_1^3=\frac{53}6\)`]],
+['6.3','7',R`\(y=\frac34x^{4/3}-\frac38x^{2/3}+5\)，\(1\le x\le8\) 的弧長。`,R`\(\dfrac{99}8\)`,R`同樣是完全平方型。`,
+ [R`\(y'=x^{1/3}-\frac14x^{-1/3}\)，\(1+(y')^2=\left(x^{1/3}+\frac14x^{-1/3}\right)^2\)。`,R`\(L=\left[\frac34x^{4/3}+\frac38x^{2/3}\right]_1^8=\left(12+\frac32\right)-\left(\frac34+\frac38\right)=\frac{99}8\)`]],
+['6.3','10',R`\(y=\frac{x^2}2-\frac{\ln x}4\)，\(1\le x\le3\) 的弧長。`,R`\(4+\dfrac{\ln3}4\)`,R`完全平方型。`,
+ [R`\(y'=x-\frac1{4x}\)，\(1+(y')^2=\left(x+\frac1{4x}\right)^2\)。`,R`\(L=\left[\frac{x^2}2+\frac{\ln x}4\right]_1^3=4+\frac{\ln3}4\)`]],
+['6.3','14',R`\(y=\frac12(e^x+e^{-x})\)，\(-1\le x\le1\) 的弧長。`,R`\(e-e^{-1}\)`,R`109 年考過同一條曲線。`,
+ [R`\(\sqrt{1+(y')^2}=\frac{e^x+e^{-x}}2\)`,R`\(L=\left[\frac{e^x-e^{-x}}2\right]_{-1}^1=e-e^{-1}\)`]],
+['6.3','15',R`\(x=\displaystyle\int_0^y\sqrt{\sec^4t-1}\,dt\)，\(-\frac\pi4\le y\le\frac\pi4\) 的弧長。`,R`\(2\)`,R`用基本定理求 \(\frac{dx}{dy}\)。`,
+ [R`\(\frac{dx}{dy}=\sqrt{\sec^4y-1}\)，\(1+(x')^2=\sec^4y\)。`,R`\(L=\int_{-\pi/4}^{\pi/4}\sec^2y\,dy=1-(-1)=2\)`]],
+/* 6.4 */
+['6.4','11',R`線段 \(y=\frac x2+\frac12\)，\(1\le x\le3\)，繞 \(x\) 軸，求曲面面積，並用錐台公式驗算。`,R`\(3\pi\sqrt5\)`,R`\(y'=\frac12\)，\(\sqrt{1+(y')^2}=\frac{\sqrt5}2\)。`,
+ [R`\(S=2\pi\int_1^3\frac{x+1}2\cdot\frac{\sqrt5}2dx=\frac{\pi\sqrt5}2\cdot6=3\pi\sqrt5\)`,R`驗算：\(y_1=1,y_2=2\)，斜高 \(\sqrt5\)，\(\pi(1+2)\sqrt5\)。`]],
+['6.4','12',R`同一線段繞 \(y\) 軸，求曲面面積。`,R`\(4\pi\sqrt5\)`,R`這次半徑是 \(x\)。`,
+ [R`\(S=2\pi\int_1^3x\cdot\frac{\sqrt5}2dx=\pi\sqrt5\cdot4=4\pi\sqrt5\)`,R`驗算：半徑 1 和 3，\(\pi(1+3)\sqrt5\)。`]],
+['6.4','16',R`\(y=\sqrt{x+1}\)，\(1\le x\le5\)，繞 \(x\) 軸，求曲面面積。`,R`\(\dfrac{49\pi}3\)`,R`先算 \(y\sqrt{1+(y')^2}\)。`,
+ [R`\(y\sqrt{1+(y')^2}=\sqrt{y^2+(yy')^2}=\sqrt{x+1+\frac14}\)`,R`\(S=2\pi\int_1^5\sqrt{x+\frac54}dx=\frac{4\pi}3\left[\left(\frac{25}4\right)^{3/2}-\left(\frac94\right)^{3/2}\right]=\frac{49\pi}3\)`]],
+['6.4','21',R`\(x=\frac{e^y+e^{-y}}2\)，\(0\le y\le\ln2\)，繞 \(y\) 軸，求曲面面積。`,R`\(\pi\left(\ln2+\dfrac{15}{16}\right)\)`,R`\(\sqrt{1+(x')^2}=x\)，所以被積函數是 \(x^2\)。`,
+ [R`\(S=2\pi\int_0^{\ln2}\left(\frac{e^y+e^{-y}}2\right)^2dy=\frac\pi2\int_0^{\ln2}(e^{2y}+2+e^{-2y})dy\)`,R`\(=\frac\pi2\left[\frac{e^{2y}-e^{-2y}}2+2y\right]_0^{\ln2}=\frac\pi2\left(\frac{15}8+2\ln2\right)=\pi\left(\ln2+\frac{15}{16}\right)\)`]],
+/* 8.1 */
+['8.1','1',R`\(\displaystyle\int x\sin\frac x2\,dx\)`,R`\(-2x\cos\frac x2+4\sin\frac x2+C\)`,R`\(u=x\)，\(dv=\sin\frac x2dx\)。`,[R`\(v=-2\cos\frac x2\)：\(-2x\cos\frac x2+2\int\cos\frac x2dx=-2x\cos\frac x2+4\sin\frac x2+C\)`]],
+['8.1','6',R`\(\displaystyle\int_1^ex^3\ln x\,dx\)`,R`\(\dfrac{3e^4+1}{16}\)`,R`\(u=\ln x\)。`,[R`\(\left[\frac{x^4}4\ln x-\frac{x^4}{16}\right]_1^e=\frac{e^4}4-\frac{e^4}{16}+\frac1{16}=\frac{3e^4+1}{16}\)`]],
+['8.1','16',R`\(\displaystyle\int p^4e^{-p}\,dp\)`,R`\(-e^{-p}(p^4+4p^3+12p^2+24p+24)+C\)`,R`表格法。`,[R`左欄 \(p^4,4p^3,12p^2,24p,24\)，右欄每次積分都多一個負號，所有項都是 \(-e^{-p}\) 乘上去。`]],
+['8.1','23',R`\(\displaystyle\int e^{2x}\cos3x\,dx\)`,R`\(\dfrac{e^{2x}(2\cos3x+3\sin3x)}{13}+C\)`,R`分部兩次後移項。`,
+ [R`\(I=\frac12e^{2x}\cos3x+\frac32\int e^{2x}\sin3x\,dx\)`,R`\(\int e^{2x}\sin3x=\frac12e^{2x}\sin3x-\frac32I\)`,R`\(I\left(1+\frac94\right)=\frac12e^{2x}\cos3x+\frac34e^{2x}\sin3x\)，整理得答案。`]],
+['8.1','27',R`\(\displaystyle\int_0^{\pi/3}x\tan^2x\,dx\)`,R`\(\dfrac{\pi\sqrt3}3-\ln2-\dfrac{\pi^2}{18}\)`,R`\(\tan^2x=\sec^2x-1\)，前面分部。`,
+ [R`\(\int x\sec^2x\,dx=x\tan x+\ln|\cos x|\)`,R`\(\left[x\tan x+\ln\cos x-\frac{x^2}2\right]_0^{\pi/3}=\frac{\pi}{3}\sqrt3+\ln\frac12-\frac{\pi^2}{18}\)`]],
+['8.1','29',R`\(\displaystyle\int\sin(\ln x)\,dx\)`,R`\(\dfrac x2\left(\sin(\ln x)-\cos(\ln x)\right)+C\)`,R`\(dv=dx\)，分部兩次會繞回來。`,
+ [R`\(I=x\sin(\ln x)-\int\cos(\ln x)dx\)`,R`\(\int\cos(\ln x)dx=x\cos(\ln x)+I\)`,R`\(2I=x\sin(\ln x)-x\cos(\ln x)\)`]],
+['8.1','35',R`\(\displaystyle\int\frac{\ln x}{x^2}dx\)`,R`\(-\dfrac{\ln x}x-\dfrac1x+C\)`,R`\(u=\ln x\)，\(dv=x^{-2}dx\)。`,[R`\(-\frac{\ln x}x+\int\frac1{x^2}dx=-\frac{\ln x}x-\frac1x+C\)`]],
+['8.1','54',R`\(\displaystyle\int\frac{xe^x}{(x+1)^2}dx\)`,R`\(\dfrac{e^x}{x+1}+C\)`,R`\(u=xe^x\)，\(dv=\frac{dx}{(x+1)^2}\)。跟 111 年考題同型。`,
+ [R`\(du=(x+1)e^xdx\)，\(v=-\frac1{x+1}\)。`,R`\(-\frac{xe^x}{x+1}+\int e^xdx=e^x\left(1-\frac{x}{x+1}\right)=\frac{e^x}{x+1}\)`]],
+['8.1','81',R`\(\int\cos^{-1}x\,dx\) 有兩種寫法：(a) \(x\cos^{-1}x-\sin(\cos^{-1}x)+C\)　(b) \(x\cos^{-1}x-\sqrt{1-x^2}+C\)。兩個都對嗎？`,R`都對`,R`畫三角形算 \(\sin(\cos^{-1}x)\)。`,
+ [R`令 \(\theta=\cos^{-1}x\in[0,\pi]\)，\(\sin\theta\ge0\)，所以 \(\sin\theta=\sqrt{1-x^2}\)。兩式完全相同。`]],
+/* 8.2 */
+['8.2','6',R`\(\displaystyle\int\cos^34x\,dx\)`,R`\(\frac14\sin4x-\frac1{12}\sin^34x+C\)`,R`奇次方，\(u=\sin4x\)。`,[R`\(\int(1-\sin^24x)\cos4x\,dx=\frac14\int(1-u^2)du\)`]],
+['8.2','17',R`\(\displaystyle\int_0^\pi8\sin^4x\,dx\)`,R`\(3\pi\)`,R`偶次方，降冪兩次。`,
+ [R`\(\sin^4x=\left(\frac{1-\cos2x}2\right)^2=\frac38-\frac12\cos2x+\frac18\cos4x\)`,R`在 \([0,\pi]\) 上 cos 項積分為 0：\(8\cdot\frac38\pi=3\pi\)`]],
+['8.2','27',R`\(\displaystyle\int_{\pi/3}^{\pi/2}\frac{\sin^2x}{\sqrt{1-\cos x}}dx\)`,R`\(\dfrac{3\sqrt6-4}6\)`,R`\(\sin^2x=(1-\cos x)(1+\cos x)\)。`,
+ [R`被積函數 \(=(1+\cos x)\sqrt{1-\cos x}\)。用半角：\(\sqrt{1-\cos x}=\sqrt2\sin\frac x2\)，\(1+\cos x=2\cos^2\frac x2\)。`,R`\(2\sqrt2\int\cos^2\frac x2\sin\frac x2dx\)，令 \(w=\cos\frac x2\)：\(-\frac{4\sqrt2}3\cos^3\frac x2\)。`,R`代入：\(-\frac{4\sqrt2}3\left(\frac{2\sqrt2}8-\frac{3\sqrt3}8\right)=\frac{3\sqrt6-4}6\)`]],
+['8.2','47',R`\(\displaystyle\int\tan^5x\,dx\)`,R`\(\frac{\tan^4x}4-\frac{\tan^2x}2+\ln|\sec x|+C\)`,R`一次拆一個 \(\tan^2x=\sec^2x-1\)。`,
+ [R`\(\int\tan^3x\sec^2x\,dx-\int\tan^3x\,dx\)`,R`\(\int\tan^3x=\int\tan x\sec^2x-\int\tan x=\frac{\tan^2x}2-\ln|\sec x|\)`,R`合起來：\(\frac{\tan^4x}4-\frac{\tan^2x}2+\ln|\sec x|+C\)`]],
+['8.2','51',R`\(\displaystyle\int_{\pi/4}^{\pi/3}\tan^5\theta\sec^4\theta\,d\theta\)`,R`\(\dfrac{43}3\)`,R`sec 偶次，留 \(\sec^2\theta\)，\(u=\tan\theta\)。`,
+ [R`\(\int_1^{\sqrt3}u^5(1+u^2)du=\left[\frac{u^6}6+\frac{u^8}8\right]_1^{\sqrt3}\)`,R`\(=\left(\frac{27}6+\frac{81}8\right)-\left(\frac16+\frac18\right)=\frac{43}3\)`]],
+['8.2','53',R`\(\displaystyle\int\sin3x\cos2x\,dx\)`,R`\(-\frac{\cos5x}{10}-\frac{\cos x}2+C\)`,R`積化和差。`,[R`\(\frac12\int(\sin5x+\sin x)dx\)`]],
+['8.2','70',R`\(\displaystyle\int x\cos^3x\,dx\)`,R`\(\frac34x\sin x+\frac34\cos x+\frac1{12}x\sin3x+\frac1{36}\cos3x+C\)`,R`先用 \(\cos^3x=\frac{3\cos x+\cos3x}4\)，再分部。`,
+ [R`\(\int x\cos x=x\sin x+\cos x\)；\(\int x\cos3x=\frac x3\sin3x+\frac19\cos3x\)。`,R`\(\frac34(x\sin x+\cos x)+\frac14\left(\frac x3\sin3x+\frac19\cos3x\right)+C\)`]],
+/* 8.3 */
+['8.3','2',R`\(\displaystyle\int\frac{3\,dx}{\sqrt{1+9x^2}}\)`,R`\(\ln\left(3x+\sqrt{1+9x^2}\right)+C\)`,R`\(3x=\tan\theta\)。`,[R`\(\int\sec\theta\,d\theta=\ln|\sec\theta+\tan\theta|\)，\(\tan\theta=3x\)，\(\sec\theta=\sqrt{1+9x^2}\)。`]],
+['8.3','8',R`\(\displaystyle\int\sqrt{1-9t^2}\,dt\)`,R`\(\frac t2\sqrt{1-9t^2}+\frac16\sin^{-1}3t+C\)`,R`\(3t=\sin\theta\)。`,
+ [R`\(dt=\frac13\cos\theta\,d\theta\)：\(\frac13\int\cos^2\theta\,d\theta=\frac16(\theta+\sin\theta\cos\theta)\)`,R`換回 \(\theta=\sin^{-1}3t\)，\(\cos\theta=\sqrt{1-9t^2}\)。`]],
+['8.3','9',R`\(\displaystyle\int\frac{dx}{\sqrt{4x^2-49}}\)，\(x>\frac72\)`,R`\(\frac12\ln\left|2x+\sqrt{4x^2-49}\right|+C\)`,R`\(2x=7\sec\theta\)。`,
+ [R`\(dx=\frac72\sec\theta\tan\theta\,d\theta\)，\(\sqrt{4x^2-49}=7\tan\theta\)。`,R`\(\frac12\int\sec\theta\,d\theta=\frac12\ln\left|\frac{2x}7+\frac{\sqrt{4x^2-49}}7\right|\)，常數併入 \(C\)。`]],
+['8.3','40',R`\(\displaystyle\int_{\ln(3/4)}^{\ln(4/3)}\frac{e^t\,dt}{(1+e^{2t})^{3/2}}\)`,R`\(\dfrac15\)`,R`\(u=e^t\)，再 \(u=\tan\theta\)。`,
+ [R`\(\int_{3/4}^{4/3}\frac{du}{(1+u^2)^{3/2}}\)，令 \(u=\tan\theta\)：\(\int\cos\theta\,d\theta=\sin\theta=\frac{u}{\sqrt{1+u^2}}\)。`,R`\(\frac{4/3}{5/3}-\frac{3/4}{5/4}=\frac45-\frac35=\frac15\)`]],
+['8.3','46',R`\(\displaystyle\int\sqrt{\frac{x}{1-x^3}}\,dx\)（提示：\(u=x^{3/2}\)）`,R`\(\frac23\sin^{-1}\left(x^{3/2}\right)+C\)`,R`\(du=\frac32x^{1/2}dx\)。`,[R`\(\int\frac{x^{1/2}}{\sqrt{1-x^3}}dx=\frac23\int\frac{du}{\sqrt{1-u^2}}=\frac23\sin^{-1}u+C\)`]],
+['8.3','61',R`用 (a) 分部積分 (b) 變數變換 (c) 三角代換 計算 \(\displaystyle\int x^3\sqrt{1-x^2}\,dx\)`,R`\(-\frac13(1-x^2)^{3/2}+\frac15(1-x^2)^{5/2}+C\)`,R`三種方法答案長相不同，但化簡後一樣。`,
+ [R`(b) 最快：\(u=1-x^2\)，\(x^2=1-u\)：\(-\frac12\int(1-u)u^{1/2}du=-\frac13u^{3/2}+\frac15u^{5/2}\)`,R`(a) \(u=x^2\)，\(dv=x\sqrt{1-x^2}dx\)：\(-\frac{x^2}3(1-x^2)^{3/2}-\frac2{15}(1-x^2)^{5/2}+C\)`,R`(c) \(x=\sin\theta\)：\(\int\sin^3\theta\cos^2\theta\,d\theta\)，再令 \(w=\cos\theta\)。`]],
+/* 8.4 */
+['8.4','16',R`\(\displaystyle\int\frac{x+3}{2x^3-8x}dx\)`,R`\(-\frac38\ln|x|+\frac5{16}\ln|x-2|+\frac1{16}\ln|x+2|+C\)`,R`分母 \(2x(x-2)(x+2)\)，全部用代根。`,
+ [R`\(x=0\)：\(A=\frac{3}{2(-2)(2)}=-\frac38\)；\(x=2\)：\(B=\frac{5}{2\cdot2\cdot4}=\frac5{16}\)；\(x=-2\)：\(C=\frac{1}{2(-2)(-4)}=\frac1{16}\)。`]],
+['8.4','19',R`\(\displaystyle\int\frac{dx}{(x^2-1)^2}\)`,R`\(\frac14\ln\left|\frac{x+1}{x-1}\right|-\frac{x}{2(x^2-1)}+C\)`,R`\(\frac{A}{x-1}+\frac{B}{(x-1)^2}+\frac{C}{x+1}+\frac{D}{(x+1)^2}\)`,
+ [R`代根得 \(B=D=\frac14\)，再比較係數得 \(A=-\frac14\)、\(C=\frac14\)。`,R`積分：\(-\frac14\ln|x-1|-\frac1{4(x-1)}+\frac14\ln|x+1|-\frac1{4(x+1)}\)`,R`後兩個分式合併成 \(-\frac{x}{2(x^2-1)}\)。`]],
+['8.4','23',R`\(\displaystyle\int\frac{y^2+2y+1}{(y^2+1)^2}dy\)`,R`\(\tan^{-1}y-\dfrac1{y^2+1}+C\)`,R`分子拆成 \((y^2+1)+2y\)。`,[R`\(\int\frac{dy}{y^2+1}+\int\frac{2y}{(y^2+1)^2}dy=\tan^{-1}y-\frac1{y^2+1}+C\)`]],
+['8.4','28',R`\(\displaystyle\int\frac{dx}{x^4+x}\)`,R`\(\frac13\ln\left|\frac{x^3}{x^3+1}\right|+C\)`,R`同除 \(x^4\)，令 \(u=1+x^{-3}\)。`,
+ [R`\(\int\frac{x^{-4}}{1+x^{-3}}dx\)，\(du=-3x^{-4}dx\)：\(-\frac13\ln|1+x^{-3}|\)`,R`\(=\frac13\ln\left|\frac{x^3}{x^3+1}\right|+C\)。用部分分式拆 \(x(x+1)(x^2-x+1)\) 也行，但慢很多。`]],
+['8.4','50',R`\(\displaystyle\int\frac{dx}{x^6(x^5+4)}\)`,R`\(\frac1{80}\ln\left|\frac{x^5+4}{x^5}\right|-\frac1{20x^5}+C\)`,R`分子分母同乘 \(x^4\)，令 \(u=x^5\)。`,
+ [R`\(\int\frac{x^4dx}{x^{10}(x^5+4)}=\frac15\int\frac{du}{u^2(u+4)}\)`,R`\(\frac1{u^2(u+4)}=-\frac1{16u}+\frac1{4u^2}+\frac1{16(u+4)}\)`,R`\(\frac15\left(-\frac1{16}\ln|u|-\frac1{4u}+\frac1{16}\ln|u+4|\right)+C\)`]],
+['8.4','72',R`\(y=\dfrac{2}{(x+1)(2-x)}\)、\(0\le x\le1\) 下方的區域繞 \(y\) 軸，求體積。`,R`\(\dfrac{4\pi}3\ln2\)`,R`圓柱殼法，再部分分式。`,
+ [R`\(V=2\pi\int_0^1\frac{2x}{(x+1)(2-x)}dx\)`,R`\(\frac{x}{(x+1)(2-x)}=-\frac{1/3}{x+1}+\frac{2/3}{2-x}\)`,R`\(\int_0^1=-\frac13\ln2+\frac23\ln2=\frac13\ln2\)，\(V=4\pi\cdot\frac13\ln2\)`]],
+/* 8.7 */
+['8.7','1',R`\(\displaystyle\int_0^\infty\frac{dx}{x^2+1}\)`,R`\(\dfrac\pi2\)`,R`寫成 \(\lim_{b\to\infty}\)。`,[R`\(\lim_{b\to\infty}\tan^{-1}b-0=\frac\pi2\)`]],
+['8.7','5',R`\(\displaystyle\int_{-1}^1\frac{dx}{x^{2/3}}\)`,R`\(6\)`,R`\(x=0\) 在中間爆掉，拆成兩個。`,
+ [R`\(\int_0^1x^{-2/3}dx=\lim_{t\to0^+}\left[3x^{1/3}\right]_t^1=3\)，\(p=\frac23<1\) 收斂。`,R`左半邊對稱也是 3，合計 6。`]],
+['8.7','11',R`\(\displaystyle\int_2^\infty\frac{2}{v^2-v}dv\)`,R`\(2\ln2\)`,R`部分分式，再取極限。`,
+ [R`\(\frac2{v(v-1)}=\frac2{v-1}-\frac2v\)，反導數 \(2\ln\frac{v-1}v\)。`,R`\(b\to\infty\) 時 \(\ln\frac{b-1}b\to0\)，結果 \(0-2\ln\frac12=2\ln2\)。`]],
+['8.7','21',R`\(\displaystyle\int_{-\infty}^0\theta e^\theta\,d\theta\)`,R`\(-1\)`,R`分部積分，再用羅必達處理 \(be^b\)。`,
+ [R`反導數 \((\theta-1)e^\theta\)。`,R`\(\lim_{b\to-\infty}(b-1)e^b=0\)（羅必達），結果 \(-1-0=-1\)。`]],
+['8.7','24',R`\(\displaystyle\int_{-\infty}^\infty2xe^{-x^2}dx\)`,R`\(0\)`,R`拆成 \(\int_{-\infty}^0+\int_0^\infty\)，兩邊都要收斂。`,
+ [R`反導數 \(-e^{-x^2}\)。\(\int_0^\infty=1\)，\(\int_{-\infty}^0=-1\)。`,R`兩邊都收斂，相加 0。只說「奇函數所以是 0」不夠，要先確認兩半各自收斂。`]],
+['8.7','26',R`\(\displaystyle\int_0^1(-\ln x)\,dx\)`,R`\(1\)`,R`就是 \(-\int_0^1\ln x\,dx\)。`,[R`\(\int_0^1\ln x\,dx=-1\)，所以答案 1。過程要寫 \(\lim_{t\to0^+}t\ln t=0\)。`]]
+];
+
+const HW = HW_RAW.map(([sec,no,q,a,hint,steps])=>({id:'hw-'+sec+'-'+no, src:'習題', sec, no, week:SEC_WEEK[sec], topic:SEC_TOPIC[sec], pts:0, hw:true, q, a, hint, steps}));
+
+</script>
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const KEY='calcB1-final-v1';
+let store={};
+try{store=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){store={}}
+store.st=store.st||{};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store))}catch(e){}}
+/* 進度格式：st[id] = {s:'ok'|'again', t:時間戳}，舊格式（純字串）自動轉換 */
+Object.keys(store.st).forEach(k=>{if(typeof store.st[k]==='string')store.st[k]={s:store.st[k],t:1}});
+function st(id){const v=store.st[id];return v&&v.s?v.s:'new'}
+function setSt(id,v){store.st[id]={s:v,t:Date.now()};save();renderHome();pushSoon()}
+
+/* ---------- 跨裝置同步（Google 試算表後端） ---------- */
+const ENDPOINT='';
+let syncCode='';try{syncCode=localStorage.getItem(KEY+'-code')||''}catch(e){}
+function merge(a,b){const o={...a};Object.keys(b||{}).forEach(k=>{if(!o[k]||(b[k]&&b[k].t>o[k].t))o[k]=b[k]});return o}
+function syncMsg(t,bad){const el=$('#syncState');if(el){el.textContent=t;el.className='small '+(bad?'status-again':'muted')}}
+async function pull(){
+  if(!ENDPOINT||!syncCode)return;
+  syncMsg('同步中…');
+  try{const r=await fetch(ENDPOINT+'?code='+encodeURIComponent(syncCode));const d=await r.json();
+    store.st=merge(store.st,d.st||{});save();renderHome();if(typeof renderQ==='function')renderQ();await push()}
+  catch(e){syncMsg('連不上後端，進度先存在這台裝置。',true)}
+}
+async function push(){
+  if(!ENDPOINT||!syncCode)return;
+  try{await fetch(ENDPOINT,{method:'POST',body:JSON.stringify({code:syncCode,st:store.st})});
+    const d=new Date();syncMsg('已同步 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'))}
+  catch(e){syncMsg('這次沒同步成功，下次會再試。',true)}
+}
+let pushT=null;function pushSoon(){clearTimeout(pushT);pushT=setTimeout(push,1500)}
+function renderSync(){
+  const box=$('#syncBox');if(!box)return;
+  if(!ENDPOINT){box.innerHTML='<p class="small muted" style="margin:0">同步後端還沒設定，進度目前只存在這台裝置。</p>';return}
+  if(syncCode){box.innerHTML=`<p class="small" style="margin:0 0 8px">同步代碼：<b>${syncCode.replace(/[<>&]/g,'')}</b>。在另一台裝置輸入同一組代碼，進度就會合併。</p><div class="row"><button class="btn" id="syncNow">立刻同步</button><button class="btn" id="syncOff">登出這台</button></div><p id="syncState" class="small muted" style="margin:8px 0 0"></p>`;
+    $('#syncNow').onclick=pull;$('#syncOff').onclick=()=>{syncCode='';try{localStorage.removeItem(KEY+'-code')}catch(e){}renderSync()};pull()}
+  else{box.innerHTML=`<p class="small" style="margin:0 0 8px">自己取一組同步代碼（至少 6 個字，別人猜不到的），每台裝置輸入同一組。</p><div class="row"><input id="codeIn" type="text" autocomplete="off" placeholder="例如 may22-calc-0613" style="flex:1;min-width:0;font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink)"><button class="btn pri" id="codeGo">開始同步</button></div><p id="syncState" class="small muted" style="margin:8px 0 0"></p>`;
+    $('#codeGo').onclick=()=>{const v=$('#codeIn').value.trim();if(v.length<6){syncMsg('代碼至少要 6 個字。',true);return}
+      syncCode=v;try{localStorage.setItem(KEY+'-code',v)}catch(e){}renderSync()}}
+}
+
+function typeset(el){
+  const go=()=>{try{MathJax.typesetClear&&MathJax.typesetClear([el]);MathJax.typesetPromise([el]).catch(()=>{})}catch(e){}};
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){MathJax.startup.promise.then(go)}
+  else{let n=0;const t=setInterval(()=>{n++;if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){clearInterval(t);MathJax.startup.promise.then(go)}if(n>100)clearInterval(t)},100)}
+}
+const esc=s=>s;
+
+const EXAM_N=P.length;P.push(...HW);
+$('#nExam').textContent=EXAM_N;$('#nHw').textContent=HW.length;
+function curWeek(){const now=new Date();let c=null;WEEKS.forEach(w=>{if(now>=new Date(w.start+'T00:00:00+08:00'))c=w.w});return c}
+
+/* ---------- 分頁 ---------- */
+const views=['home','learn','drill','quick','exam'];
+function show(v){
+  views.forEach(x=>{$('#v-'+x).classList.toggle('on',x===v)});
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  if(location.hash!=='#'+v){history.replaceState(null,'','#'+v)}
+  window.scrollTo(0,0);
+  if(v==='learn')typeset($('#v-learn'));
+  if(v==='home')typeset($('#v-home'));
+}
+document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(views.includes(h))show(h)});
+
+/* ---------- 首頁 ---------- */
+const WEIGHTS=[['積分技巧',53],['面積體積弧長',16],['其他綜合',11],['羅必達',10],['基本定理',6],['瑕積分',4]];
+$('#weightBars').innerHTML=WEIGHTS.map(([k,v])=>`<div class="bar"><span>${k}</span><div class="track"><div class="fill" style="width:${v/53*100}%"></div></div><span class="v">${v}%</span></div>`).join('');
+const ORDER=['basic','sub','parts','trig','tsub','pf','lhop','ftc','riemann','vol','arc','imp','adv'];
+function renderHome(){
+  let ok=0,ag=0,nw=0;
+  P.forEach(p=>{const s=st(p.id);if(s==='ok')ok++;else if(s==='again')ag++;else nw++});
+  $('#sOk').textContent=ok;$('#sAgain').textContent=ag;$('#sLeft').textContent=nw;
+  $('#progList').innerHTML=ORDER.map(k=>{
+    const ps=P.filter(p=>p.topic===k);if(!ps.length)return'';
+    const o=ps.filter(p=>st(p.id)==='ok').length,a=ps.filter(p=>st(p.id)==='again').length;
+    return `<div class="prow" data-k="${k}" role="button" tabindex="0"><span>${TOPICS[k]}</span><div class="track"><div class="g" style="width:${o/ps.length*100}%"></div><div class="r" style="width:${a/ps.length*100}%"></div></div><span class="v">${o}/${ps.length}</span></div>`}).join('');
+  const cw=curWeek();
+  $('#hwWeeks').innerHTML=WEEKS.map(w=>{const ps=HW.filter(p=>p.week===w.w);const o=ps.filter(p=>st(p.id)==='ok').length,a=ps.filter(p=>st(p.id)==='again').length;
+    return `<div class="prow wk" data-w="${w.w}" role="button" tabindex="0"><span>${w.w===cw?'<span class="mark"><b>第 '+w.w+' 週</b></span>':'第 '+w.w+' 週'}<br><span class="muted" style="font-size:12px">${w.secs.join('、')}</span></span><div class="track"><div class="g" style="width:${o/ps.length*100}%"></div><div class="r" style="width:${a/ps.length*100}%"></div></div><span class="v">${o}/${ps.length}</span></div>`}).join('');
+  document.querySelectorAll('.prow').forEach(r=>r.onclick=()=>{if(r.dataset.w){drill.topic='all';drill.exam='w'+r.dataset.w}else{drill.topic=r.dataset.k;drill.exam='all'}drill.stat='all';applyFilters(0);show('drill')});
+}
+
+/* ---------- 觀念 ---------- */
+$('#unitList').innerHTML=UNITS.map(u=>{
+  const n=P.filter(p=>p.topic===u.key).length;
+  return `<details class="unit"><summary><span class="t">${u.title}</span><span class="f">課本 ${u.sec}<br>${u.freq}</span></summary>
+  <div class="ubody">
+   <ul>${u.core.map(c=>`<li>${c}</li>`).join('')}</ul>
+   <div><h3>要背的</h3><div class="fbox">${u.formulas.map(f=>`<div>\\[${f}\\]</div>`).join('')}</div></div>
+   <div class="trap"><h3 style="color:var(--bad)">常見錯誤</h3><ul>${u.traps.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+   <button class="btn pri" data-k="${u.key}">練這個單元的 ${n} 題考古題</button>
+  </div></details>`}).join('');
+document.querySelectorAll('#unitList .btn').forEach(b=>b.onclick=()=>{drill.topic=b.dataset.k;drill.exam='all';drill.stat='all';applyFilters(0);show('drill')});
+$('#skipNote').innerHTML=SKIP_NOTE;
+$('#glossary').innerHTML=GLOSSARY.map(([e,c])=>`<tr><td>${e}</td><td>${c}</td></tr>`).join('');
+
+/* ---------- 刷題 ---------- */
+const drill={topic:'all',exam:'all',stat:'all',list:[],i:0,shown:0,hint:false,full:false};
+$('#topicChips').innerHTML=`<button class="chip on" data-k="all">全部</button>`+ORDER.map(k=>`<button class="chip" data-k="${k}">${TOPICS[k]}</button>`).join('');
+$('#examSel').innerHTML=`<option value="all">全部題目</option><optgroup label="考古題"><option value="exams">所有考古題</option>`+EXAMS.map(e=>`<option value="${e.id}">${e.id}</option>`).join('')+`</optgroup><optgroup label="指定習題"><option value="hw">所有指定習題</option>`+WEEKS.map(w=>`<option value="w${w.w}">第 ${w.w} 週（${w.secs.join('、')}）</option>`).join('')+`</optgroup>`;
+document.querySelectorAll('#topicChips .chip').forEach(c=>c.onclick=()=>{drill.topic=c.dataset.k;applyFilters(0)});
+$('#examSel').onchange=e=>{drill.exam=e.target.value;applyFilters(0)};
+$('#statSel').onchange=e=>{drill.stat=e.target.value;applyFilters(0)};
+function applyFilters(i){
+  document.querySelectorAll('#topicChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.k===drill.topic));
+  $('#examSel').value=drill.exam;$('#statSel').value=drill.stat;
+  drill.list=P.filter(p=>(drill.topic==='all'||p.topic===drill.topic)&&srcMatch(p,drill.exam)&&(drill.stat==='all'||st(p.id)===drill.stat));
+  drill.i=Math.min(i||0,Math.max(0,drill.list.length-1));resetQ();renderQ();
+  const on=document.querySelector('#topicChips .chip.on');if(on)on.scrollIntoView({block:'nearest',inline:'center'});
+}
+function srcMatch(p,e){if(e==='all')return true;if(e==='hw')return!!p.hw;if(e==='exams')return!p.hw;if(e[0]==='w')return p.hw&&p.week===+e.slice(1);return p.src===e}
+function resetQ(){drill.shown=0;drill.hint=false;drill.full=false}
+function renderQ(){
+  const c=$('#qCard');
+  if(!drill.list.length){c.innerHTML=`<div class="empty">這個篩選條件下沒有題目。${drill.stat==='again'?'表示你目前沒有要再練的題目。':''}</div>`;$('#qCounter').textContent='';$('#prevBtn').disabled=$('#nextBtn').disabled=true;return}
+  const p=drill.list[drill.i],s=st(p.id),allShown=drill.full||drill.shown>=p.steps.length;
+  c.innerHTML=`<div class="qhead"><div class="row"><span class="tag">${p.hw?'課本 '+p.sec+' 第 '+p.no+' 題':p.src+' 第 '+p.no+' 題'}</span>${p.hw?'<span class="tag">第 '+p.week+' 週習題</span>':''}<span class="tag">${TOPICS[p.topic]}</span>${p.hard?'<span class="tag hard">難</span>':''}</div><span class="small muted">${p.pts?p.pts+' 分':''} ${s==='ok'?'<span class="status-ok">· 會了</span>':s==='again'?'<span class="status-again">· 再練</span>':''}</span></div>
+   <div class="qtext">${p.q}</div>
+   <p class="small muted" style="margin:0 0 10px">先在紙上自己寫，卡住再往下看。</p>
+   ${drill.hint?`<div class="hintbox"><b>提示</b>　${p.hint}</div>`:''}
+   ${drill.shown||drill.full?`<ol class="steps" style="margin-top:10px">${p.steps.slice(0,drill.full?p.steps.length:drill.shown).map(x=>`<li>${x}</li>`).join('')}</ol>`:''}
+   ${allShown?`<div class="ans" style="margin-top:10px"><b>答案</b>　${p.a}</div>`:''}
+   <div class="row" style="margin-top:12px">
+     ${drill.hint?'':'<button class="btn" id="bHint">給我提示</button>'}
+     ${allShown?'':`<button class="btn" id="bStep">看下一步（${drill.shown}/${p.steps.length}）</button><button class="btn" id="bAll">直接看解答</button>`}
+   </div>
+   <div style="margin-top:12px;border-top:1px dashed var(--rule);padding-top:12px">
+     <p class="small" style="margin:0 0 8px">寫完了？誠實評一下自己：</p>
+     <div class="row"><button class="btn ok" id="bOk">我會了</button><button class="btn bad" id="bAgain">還要再練</button></div>
+   </div>`;
+  $('#qCounter').textContent=`${drill.i+1} / ${drill.list.length}`;
+  $('#prevBtn').disabled=drill.i===0;$('#nextBtn').disabled=drill.i>=drill.list.length-1;
+  const h=$('#bHint');if(h)h.onclick=()=>{drill.hint=true;renderQ()};
+  const b=$('#bStep');if(b)b.onclick=()=>{drill.shown++;renderQ()};
+  const a=$('#bAll');if(a)a.onclick=()=>{drill.full=true;renderQ()};
+  $('#bOk').onclick=()=>{setSt(p.id,'ok');next(true)};
+  $('#bAgain').onclick=()=>{setSt(p.id,'again');drill.full=true;renderQ()};
+  typeset(c);
+}
+function next(fromGrade){
+  if(drill.stat!=='all'&&fromGrade){drill.list=drill.list.filter(p=>st(p.id)===drill.stat);if(drill.i>=drill.list.length)drill.i=Math.max(0,drill.list.length-1);resetQ();renderQ();return}
+  if(drill.i<drill.list.length-1){drill.i++;resetQ();renderQ();window.scrollTo(0,0)}else{renderQ()}
+}
+$('#prevBtn').onclick=()=>{if(drill.i>0){drill.i--;resetQ();renderQ();window.scrollTo(0,0)}};
+$('#nextBtn').onclick=()=>next(false);
+
+/* ---------- 速練：公式卡 ---------- */
+let fc={order:CARDS.map((_,i)=>i),i:0,back:false};
+function renderFlash(){
+  const [f,b]=CARDS[fc.order[fc.i]];const el=$('#flash');
+  el.classList.toggle('back',fc.back);
+  el.innerHTML=fc.back?`<div><div class="small muted">答案</div>\\[${b}\\]</div>`:`<div><div class="small muted">點一下翻面</div>\\[${f}\\]</div>`;
+  $('#fCount').textContent=`${fc.i+1} / ${CARDS.length}`;typeset(el);
+}
+$('#flash').onclick=()=>{fc.back=!fc.back;renderFlash()};
+$('#flash').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fc.back=!fc.back;renderFlash()}};
+$('#fNext').onclick=()=>{fc.i=(fc.i+1)%CARDS.length;fc.back=false;renderFlash()};
+$('#fPrev').onclick=()=>{fc.i=(fc.i-1+CARDS.length)%CARDS.length;fc.back=false;renderFlash()};
+$('#fShuffle').onclick=()=>{fc.order.sort(()=>Math.random()-.5);fc.i=0;fc.back=false;renderFlash()};
+
+/* ---------- 速練：招式判斷 ---------- */
+const METHODS=['代換','分部積分','三角積分','三角代換','部分分式','對稱或配方'];
+function norm(m){if(!m)return null;if(m.startsWith('代換＋分部'))return'代換';if(m.includes('部分分式'))return'部分分式';if(m==='代換＋三角代換')return'代換';
+  if(m.includes('對稱')||m==='配方')return'對稱或配方';if(m==='積化和差')return'三角積分';if(m==='基本公式')return null;return METHODS.includes(m)?m:null}
+const MQ=P.filter(p=>norm(p.m)&&!p.q.includes('<br>'));
+let mq={i:0,order:[],right:0,done:0,answered:false};
+function newOrder(){mq.order=MQ.map((_,i)=>i).sort(()=>Math.random()-.5);mq.i=0}
+newOrder();
+const WHY={'代換':'看得到「一個函數和它的導數」，或根號裡是一次式。','分部積分':'兩種不同類的函數相乘，或 ln、反三角單獨出現。','三角積分':'sin、cos、tan、sec 的次方或乘積。','三角代換':'有 \\(\\sqrt{a^2\\pm x^2}\\) 或 \\(\\sqrt{x^2-a^2}\\)。','部分分式':'有理函數，分母可以因式分解（可能要先代換）。','對稱或配方':'對稱的上下限，或根號裡要先配方。'};
+function renderM(){
+  const p=MQ[mq.order[mq.i]];mq.answered=false;
+  $('#mQ').innerHTML=p.q;$('#mFeed').innerHTML='';
+  $('#mOpts').innerHTML=METHODS.map(m=>`<button class="btn opt" data-m="${m}">${m}</button>`).join('');
+  $('#mScore').textContent=mq.done?`答對 ${mq.right} / ${mq.done}`:'';
+  document.querySelectorAll('#mOpts .opt').forEach(b=>b.onclick=()=>{
+    if(mq.answered)return;mq.answered=true;mq.done++;
+    const right=norm(p.m);const ok=b.dataset.m===right;if(ok)mq.right++;
+    document.querySelectorAll('#mOpts .opt').forEach(x=>{if(x.dataset.m===right)x.classList.add('right');else if(x===b)x.classList.add('wrong')});
+    $('#mFeed').innerHTML=(ok?'<b class="status-ok">對！</b> ':'<b class="status-again">不對。</b> ')+`這題是「${right}」。${WHY[right]}<br><span class="muted">${p.src} ${p.no}，提示：${p.hint}</span>`;
+    $('#mScore').textContent=`答對 ${mq.right} / ${mq.done}`;typeset($('#mFeed'));
+  });
+  typeset($('#mQ'));
+}
+$('#mNext').onclick=()=>{mq.i++;if(mq.i>=mq.order.length)newOrder();renderM()};
+
+/* ---------- 模擬考 ---------- */
+$('#pastSel').innerHTML=EXAMS.map(e=>`<option value="${e.id}">${e.id}（${e.name}${e.note?'，'+e.note:''}）</option>`).join('');
+let exam=null,timerId=null;
+function pick(arr,n,used){const a=arr.filter(p=>!used.has(p.id)).sort(()=>Math.random()-.5).slice(0,n);a.forEach(p=>used.add(p.id));return a}
+$('#genExam').onclick=()=>{
+  const used=new Set(),q=[];
+  const by=k=>P.filter(p=>!p.hw&&(Array.isArray(k)?k.includes(p.topic):p.topic===k)&&p.type!=='tf');
+  q.push(...pick(by('lhop'),2,used));
+  ['sub','parts','trig','tsub','pf'].forEach(k=>q.push(...pick(by(k).filter(p=>p.m),1,used)));
+  q.push(...pick(by(['parts','trig','tsub','pf']).filter(p=>p.m),1,used));
+  q.push(...pick(by('vol'),1,used));q.push(...pick(by('arc'),1,used));
+  q.push(...pick(by(['imp','ftc']),1,used));q.push(...pick(by(['adv','riemann']),1,used));
+  startExam(q,'隨機模擬卷');
+};
+$('#pastBtn').onclick=()=>{const id=$('#pastSel').value;startExam(P.filter(p=>p.src===id),id+' 期末考')};
+function startExam(qs,title){
+  exam={qs,title,left:110*60,running:true,submitted:false,grade:{}};
+  $('#examSetup').style.display='none';$('#examPaper').style.display='block';renderExam();
+  clearInterval(timerId);timerId=setInterval(()=>{if(exam&&exam.running&&!exam.submitted){exam.left--;const t=$('#tm');if(t)t.textContent=fmt(exam.left);if(exam.left<=0){exam.running=false;submit()}}},1000);
+  window.scrollTo(0,0);
+}
+const fmt=s=>{s=Math.max(0,s);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+function total(){return exam.qs.reduce((a,p)=>a+p.pts,0)}
+function got(){return exam.qs.reduce((a,p)=>a+(exam.grade[p.id]==null?0:exam.grade[p.id]*p.pts),0)}
+function renderExam(){
+  const e=exam,el=$('#examPaper');
+  const graded=e.qs.filter(p=>e.grade[p.id]!=null).length;
+  el.innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start">
+     <div><h2 style="margin:0">${e.title}</h2><div class="small muted">共 ${e.qs.length} 題，${total()} 分，限時 110 分鐘</div></div>
+     ${e.submitted?`<div style="text-align:right"><div class="score">${Math.round(got()/total()*100)}</div><div class="small muted">換算百分制（已批 ${graded}/${e.qs.length} 題）</div></div>`:`<div class="timer" id="tm">${fmt(e.left)}</div>`}
+   </div>
+   <div class="row" style="margin:10px 0 14px">
+     ${e.submitted?'':`<button class="btn" id="pauseBtn">${e.running?'暫停計時':'繼續計時'}</button><button class="btn pri" id="subBtn">交卷，對答案</button>`}
+     <button class="btn" id="quitBtn">${e.submitted?'回到模擬考首頁':'放棄這份'}</button>
+   </div>
+   ${e.submitted?'<p class="small" style="margin:0 0 12px">對照解答幫自己批改。半對（方法對、計算錯）給一半。批成「錯」或「半對」的題目會自動加進刷題的「還要再練」。</p>':''}
+   <div style="display:flex;flex-direction:column;gap:12px">${e.qs.map((p,i)=>`<div class="mq">
+     <div class="row" style="justify-content:space-between"><b>第 ${i+1} 題</b><span class="small muted">${p.pts} 分 · ${p.src} ${p.no}</span></div>
+     <div class="qtext">${p.q}</div>
+     ${e.submitted?`<details><summary class="small" style="cursor:pointer;color:var(--accent)">看詳解</summary><ol class="steps" style="margin-top:8px">${p.steps.map(x=>`<li>${x}</li>`).join('')}</ol></details>
+       <div class="ans"><b>答案</b>　${p.a}</div>
+       <div class="grade">${[[1,'全對','ok'],[.5,'半對',''],[0,'錯','bad']].map(([v,l,c])=>`<button class="btn ${c} ${e.grade[p.id]===v?'sel':''}" data-id="${p.id}" data-v="${v}">${l}</button>`).join('')}</div>`:''}
+   </div>`).join('')}</div>`;
+  const pb=$('#pauseBtn');if(pb)pb.onclick=()=>{e.running=!e.running;renderExam()};
+  const sb=$('#subBtn');if(sb)sb.onclick=submit;
+  $('#quitBtn').onclick=()=>{clearInterval(timerId);exam=null;$('#examPaper').style.display='none';$('#examSetup').style.display='block'};
+  el.querySelectorAll('.grade .btn').forEach(b=>b.onclick=()=>{const v=+b.dataset.v;e.grade[b.dataset.id]=v;setSt(b.dataset.id,v===1?'ok':'again');renderExam()});
+  typeset(el);
+}
+function submit(){exam.submitted=true;exam.running=false;renderExam();window.scrollTo(0,0)}
+
+/* ---------- 啟動 ---------- */
+renderHome();applyFilters(0);renderFlash();renderM();renderSync();
+const h=location.hash.slice(1);show(views.includes(h)?h:'home');
+})();
+</script>
+</body>
+</html>
